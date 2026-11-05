@@ -8,6 +8,7 @@ import ExploreScreen from '../screens/ExploreScreen';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import DownloadScreen from '../screens/DownloadScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import { useDownloadStore } from '../store/useDownloadStore';
 import { useResponsive } from '../utils/responsive';
 
 export type BottomTabParamList = {
@@ -68,6 +69,12 @@ function HeaderBrand() {
 export default function BottomTabNavigator() {
   const { rs } = useResponsive();
   const iconSize = rs(22);
+  const activeDownloadCount = useDownloadStore(
+    state =>
+      state.downloads.filter(
+        d => d.status === 'downloading' || d.status === 'queued',
+      ).length,
+  );
 
   return (
     <Tab.Navigator
@@ -117,6 +124,14 @@ export default function BottomTabNavigator() {
         options={{
           tabBarLabel: 'Tải về',
           tabBarIcon: ({ color }) => <Download color={color} size={iconSize} />,
+          tabBarBadge:
+            activeDownloadCount > 0 ? activeDownloadCount : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: COLORS.primary,
+            color: '#FFFFFF',
+            fontSize: rs(10),
+            fontWeight: '700',
+          },
         }}
       />
       <Tab.Screen

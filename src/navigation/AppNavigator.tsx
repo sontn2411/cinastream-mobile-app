@@ -13,7 +13,9 @@ export type RootStackParamList = {
     slug: string;
     movie?: MovieItem;
     resumeEpisodeIndex?: number;
+    resumeServerIndex?: number;
     resumeTime?: number;
+    localUri?: string;
   };
 };
 

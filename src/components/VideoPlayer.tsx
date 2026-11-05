@@ -30,6 +30,8 @@ interface Props {
   height: number;
   started: boolean;
   playing: boolean;
+  initialTime?: number;
+  onProgressUpdate?: (currentTime: number, duration: number) => void;
   onStart: () => void;
   onTogglePlay: () => void;
   onBack: () => void;
@@ -57,6 +59,8 @@ function VideoPlayer({
   height,
   started,
   playing,
+  initialTime,
+  onProgressUpdate,
   onStart,
   onTogglePlay,
   onBack,
@@ -65,6 +69,10 @@ function VideoPlayer({
   const { rs } = useResponsive();
   const videoRef = useRef<VideoRef>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasInitialSeeked = useRef(false);
+  const lastSavedTime = useRef(0);
+  const currentTimeRef = useRef(0);
+  const durationRef = useRef(0);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -75,13 +83,34 @@ function VideoPlayer({
   const [seekBarWidth, setSeekBarWidth] = useState(1);
   const [error, setError] = useState(false);
 
+  // Sync refs for cleanup/unmount
+  useEffect(() => {
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
+
+  useEffect(() => {
+    durationRef.current = duration;
+  }, [duration]);
+
+  // Flush progress on unmount if user was watching
+  useEffect(() => {
+    return () => {
+      if (currentTimeRef.current > 0 && onProgressUpdate) {
+        onProgressUpdate(currentTimeRef.current, durationRef.current);
+      }
+    };
+  }, [onProgressUpdate]);
+
   // New episode → reset progress & error
   useEffect(() => {
-    setCurrentTime(0);
+    const startAt = initialTime && initialTime > 0 ? initialTime : 0;
+    setCurrentTime(startAt);
     setDuration(0);
     setError(false);
     setShowControls(true);
-  }, [uri]);
+    hasInitialSeeked.current = false;
+    lastSavedTime.current = startAt;
+  }, [uri, initialTime]);
 
   useEffect(() => {
     if (hideTimer.current) {
@@ -102,9 +131,11 @@ function VideoPlayer({
       const next = Math.max(0, Math.min(duration, target));
       videoRef.current?.seek(next);
       setCurrentTime(next);
+      lastSavedTime.current = next;
+      onProgressUpdate?.(next, duration);
       setShowControls(true);
     },
-    [duration],
+    [duration, onProgressUpdate],
   );
 
   const handleSeekBarLayout = useCallback((e: LayoutChangeEvent) => {
@@ -159,8 +190,19 @@ function VideoPlayer({
           onLoad={meta => {
             setDuration(meta.duration);
             setBuffering(false);
+            if (initialTime && initialTime > 0 && !hasInitialSeeked.current) {
+              hasInitialSeeked.current = true;
+              videoRef.current?.seek(initialTime);
+              setCurrentTime(initialTime);
+            }
           }}
-          onProgress={prog => setCurrentTime(prog.currentTime)}
+          onProgress={prog => {
+            setCurrentTime(prog.currentTime);
+            if (Math.abs(prog.currentTime - lastSavedTime.current) >= 3) {
+              lastSavedTime.current = prog.currentTime;
+              onProgressUpdate?.(prog.currentTime, duration);
+            }
+          }}
           onBuffer={({ isBuffering }) => setBuffering(isBuffering)}
           onError={() => {
             setError(true);

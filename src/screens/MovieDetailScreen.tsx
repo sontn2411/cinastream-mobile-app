@@ -28,6 +28,7 @@ import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { fetchMovieDetail } from '../services/movieApi';
 import { useFavoriteStore } from '../store/useFavoriteStore';
+import { useHistoryStore } from '../store/useHistoryStore';
 import { EpisodeItem } from '../types/movie';
 import { getImageSrc } from '../utils/image';
 import { useResponsive } from '../utils/responsive';
@@ -51,14 +52,26 @@ function cleanHtml(raw?: string): string {
 }
 
 export default function MovieDetailScreen({ navigation, route }: Props) {
-  const { slug, movie: initialMovie } = route.params;
+  const { slug, movie: initialMovie, resumeEpisodeIndex, resumeTime } =
+    route.params;
   const { width, isTablet, rs } = useResponsive();
   const insets = useSafeAreaInsets();
 
-  const [selectedServerIdx, setSelectedServerIdx] = useState(0);
-  const [selectedEpisodeIdx, setSelectedEpisodeIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
+  const historyItem = useHistoryStore(state => state.getHistoryItem(slug));
+  const saveProgress = useHistoryStore(state => state.saveProgress);
+
+  const [selectedServerIdx, setSelectedServerIdx] = useState(
+    historyItem?.serverIndex ?? 0,
+  );
+  const [selectedEpisodeIdx, setSelectedEpisodeIdx] = useState(
+    resumeEpisodeIndex ?? historyItem?.episodeIndex ?? 0,
+  );
+  const [isPlaying, setIsPlaying] = useState(
+    Boolean(resumeTime !== undefined || resumeEpisodeIndex !== undefined),
+  );
+  const [hasStarted, setHasStarted] = useState(
+    Boolean(resumeTime !== undefined || resumeEpisodeIndex !== undefined),
+  );
 
   const isFavorite = useFavoriteStore(state =>
     state.favorites.some(item => item.slug === slug),
@@ -99,6 +112,24 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
     setSelectedServerIdx(idx);
     setSelectedEpisodeIdx(0);
   }, []);
+
+  const handleProgressUpdate = useCallback(
+    (currTime: number, dur: number) => {
+      if (!movie || !currentEpisode) {
+        return;
+      }
+      saveProgress({
+        movie,
+        episodeName: currentEpisode.name,
+        episodeSlug: currentEpisode.slug,
+        episodeIndex: selectedEpisodeIdx,
+        serverIndex: selectedServerIdx,
+        currentTime: currTime,
+        duration: dur,
+      });
+    },
+    [movie, currentEpisode, selectedEpisodeIdx, selectedServerIdx, saveProgress],
+  );
 
   const handleEnd = useCallback(() => {
     if (selectedEpisodeIdx + 1 < episodes.length) {
@@ -149,6 +180,8 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
         height={playerHeight}
         started={hasStarted}
         playing={isPlaying}
+        initialTime={resumeTime ?? historyItem?.currentTime}
+        onProgressUpdate={handleProgressUpdate}
         onStart={handleStartPlay}
         onTogglePlay={handleTogglePlay}
         onBack={handleBack}
@@ -294,7 +327,13 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
               <Play color="#FFFFFF" fill="#FFFFFF" size={rs(16)} />
             )}
             <Text style={[styles.watchNowText, { fontSize: rs(13) }]}>
-              {hasStarted ? (isPlaying ? 'Đang phát' : 'Tiếp tục') : 'Xem phim'}
+              {hasStarted
+                ? isPlaying
+                  ? 'Đang phát'
+                  : 'Tiếp tục'
+                : historyItem && historyItem.currentTime > 0
+                ? `Xem tiếp (${historyItem.episodeName || 'Đang dở'})`
+                : 'Xem phim'}
             </Text>
           </Pressable>
 

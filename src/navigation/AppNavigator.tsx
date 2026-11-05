@@ -12,6 +12,8 @@ export type RootStackParamList = {
   MovieDetail: {
     slug: string;
     movie?: MovieItem;
+    resumeEpisodeIndex?: number;
+    resumeTime?: number;
   };
 };
 

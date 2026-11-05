@@ -56,7 +56,8 @@ function HeaderBrand() {
             lineHeight: rs(22),
             letterSpacing: rs(1),
           },
-        ]}>
+        ]}
+      >
         <Text style={styles.cina}>CINA</Text>
         <Text style={styles.stream}>STREAM</Text>
       </Text>
@@ -92,7 +93,8 @@ export default function BottomTabNavigator() {
         tabBarBackground: GlassBlurBackground,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.secondary,
-      }}>
+      }}
+    >
       <Tab.Screen
         name="Explore"
         component={ExploreScreen}

@@ -186,6 +186,8 @@ function VideoPlayer({
           resizeMode="contain"
           paused={!playing}
           muted={muted}
+          ignoreSilentSwitch="ignore"
+          mixWithOthers="duck"
           progressUpdateInterval={500}
           onLoad={meta => {
             setDuration(meta.duration);

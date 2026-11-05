@@ -75,7 +75,7 @@ test('SplashScreen transitions to Home after 2s', async () => {
   expect(replace).not.toHaveBeenCalled();
 
   await ReactTestRenderer.act(() => {
-    jest.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(1000);
   });
 
   expect(replace).toHaveBeenCalledWith('Home');

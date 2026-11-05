@@ -351,8 +351,9 @@ async function parseM3u8Manifest(
           durationSec: 0,
           isKeyOrMap: true,
         });
-        const localKeyUri = `file://${directoryPath}/${keyFilename}`;
-        rewrittenLines.push(line.replace(/URI="([^"]+)"/i, `URI="${localKeyUri}"`));
+        // Relative path so HLS players on both Android & iOS resolve segments within the same directory,
+        // and avoid broken paths when iOS DocumentDir UUID changes upon app updates.
+        rewrittenLines.push(line.replace(/URI="([^"]+)"/i, `URI="${keyFilename}"`));
         continue;
       }
       rewrittenLines.push(line);
@@ -372,8 +373,7 @@ async function parseM3u8Manifest(
           durationSec: 0,
           isKeyOrMap: true,
         });
-        const localMapUri = `file://${directoryPath}/${mapFilename}`;
-        rewrittenLines.push(line.replace(/URI="([^"]+)"/i, `URI="${localMapUri}"`));
+        rewrittenLines.push(line.replace(/URI="([^"]+)"/i, `URI="${mapFilename}"`));
         continue;
       }
       rewrittenLines.push(line);
@@ -385,7 +385,7 @@ async function parseM3u8Manifest(
       continue;
     }
 
-    // Segment URI line
+    // Segment URI line: use relative filename (RFC 8216 HLS standard)
     segCounter += 1;
     const segUrl = resolveUrl(mediaPlaylistUrl, line);
     const segFilename = `seg_${String(segCounter).padStart(5, '0')}.ts`;
@@ -397,7 +397,7 @@ async function parseM3u8Manifest(
     });
     pendingDuration = 0;
 
-    rewrittenLines.push(`file://${directoryPath}/${segFilename}`);
+    rewrittenLines.push(segFilename);
   }
 
   if (segments.length === 0) {

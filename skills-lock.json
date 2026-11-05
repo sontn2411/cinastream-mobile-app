@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "react-native-architecture": {
+      "source": "Dokhacgiakhoa/antigravity-ide",
+      "sourceType": "github",
+      "skillPath": ".agent/skills/react-native-architecture/SKILL.md",
+      "computedHash": "af80cc3a0ccbf5bf5574e4c7a0dccca402916f4e22790491d2da34e7a974d322"
+    },
+    "react-native-best-practices": {
+      "source": "Dokhacgiakhoa/antigravity-ide",
+      "sourceType": "github",
+      "skillPath": ".agent/skills/react-native-best-practices/SKILL.md",
+      "computedHash": "e9b697439bb7a24daf9dca36f7988f43cc06320e14210d232a5db145244a7461"
+    },
+    "vercel-react-native-skills": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-native-skills/SKILL.md",
+      "computedHash": "2e9088a7333666d8c2833b8ff58bd51b955501c42b4c7244f72b4cbf22dafcc4"
+    }
+  }
+}

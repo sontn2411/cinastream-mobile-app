@@ -198,7 +198,7 @@ export default function HistoryScreen() {
                   color="#FFFFFF"
                   fill="#FFFFFF"
                   size={rs(12)}
-                  style={{ marginLeft: 2 }}
+                  style={styles.playIconOffset}
                 />
               </View>
             </View>
@@ -306,6 +306,11 @@ export default function HistoryScreen() {
     [numColumns, history.length, gap],
   );
 
+  const renderItemSeparator = useCallback(
+    () => <View style={{ height: gap }} />,
+    [gap],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -318,9 +323,7 @@ export default function HistoryScreen() {
         contentContainerStyle={contentContainerStyle}
         columnWrapperStyle={columnWrapperStyle}
         ItemSeparatorComponent={
-          numColumns === 1
-            ? () => <View style={{ height: gap }} />
-            : undefined
+          numColumns === 1 ? renderItemSeparator : undefined
         }
         removeClippedSubviews
         initialNumToRender={8}
@@ -558,6 +561,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  playIconOffset: {
+    marginLeft: 2,
   },
   emptyIconCircle: {
     backgroundColor: 'rgba(239, 68, 68, 0.08)',

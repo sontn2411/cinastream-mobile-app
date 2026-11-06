@@ -76,6 +76,26 @@ export default function BottomTabNavigator() {
       ).length,
   );
 
+  const renderExploreIcon = useCallback(
+    ({ color }: { color: string }) => <Compass color={color} size={iconSize} />,
+    [iconSize],
+  );
+
+  const renderFavoriteIcon = useCallback(
+    ({ color }: { color: string }) => <Heart color={color} size={iconSize} />,
+    [iconSize],
+  );
+
+  const renderDownloadIcon = useCallback(
+    ({ color }: { color: string }) => <Download color={color} size={iconSize} />,
+    [iconSize],
+  );
+
+  const renderHistoryIcon = useCallback(
+    ({ color }: { color: string }) => <History color={color} size={iconSize} />,
+    [iconSize],
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -107,7 +127,7 @@ export default function BottomTabNavigator() {
         component={ExploreScreen}
         options={{
           tabBarLabel: 'Khám phá',
-          tabBarIcon: ({ color }) => <Compass color={color} size={iconSize} />,
+          tabBarIcon: renderExploreIcon,
         }}
       />
       <Tab.Screen
@@ -115,7 +135,7 @@ export default function BottomTabNavigator() {
         component={FavoriteScreen}
         options={{
           tabBarLabel: 'Yêu thích',
-          tabBarIcon: ({ color }) => <Heart color={color} size={iconSize} />,
+          tabBarIcon: renderFavoriteIcon,
         }}
       />
       <Tab.Screen
@@ -123,7 +143,7 @@ export default function BottomTabNavigator() {
         component={DownloadScreen}
         options={{
           tabBarLabel: 'Tải về',
-          tabBarIcon: ({ color }) => <Download color={color} size={iconSize} />,
+          tabBarIcon: renderDownloadIcon,
           tabBarBadge:
             activeDownloadCount > 0 ? activeDownloadCount : undefined,
           tabBarBadgeStyle: {
@@ -139,7 +159,7 @@ export default function BottomTabNavigator() {
         component={HistoryScreen}
         options={{
           tabBarLabel: 'Lịch sử',
-          tabBarIcon: ({ color }) => <History color={color} size={iconSize} />,
+          tabBarIcon: renderHistoryIcon,
         }}
       />
     </Tab.Navigator>

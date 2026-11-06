@@ -577,7 +577,7 @@ export default function DownloadScreen() {
                             color="#FFFFFF"
                             fill="#FFFFFF"
                             size={rs(15)}
-                            style={{ marginLeft: 2 }}
+                            style={styles.playIconOffset}
                           />
                         )}
                       </Pressable>
@@ -957,6 +957,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 320,
+  },
+  playIconOffset: {
+    marginLeft: 2,
   },
   exploreBtn: {
     flexDirection: 'row',

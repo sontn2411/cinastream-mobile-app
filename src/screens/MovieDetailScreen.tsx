@@ -684,7 +684,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
         </View>
 
         {isLoading ? (
-          <View style={{ paddingVertical: rs(24), alignItems: 'center' }}>
+          <View style={[styles.loadingCenter, { paddingVertical: rs(24) }]}>
             <ActivityIndicator size="large" color={COLORS.primary} />
           </View>
         ) : null}
@@ -892,7 +892,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
           >
             {/* Header Modal */}
             <View style={styles.modalHeader}>
-              <View style={{ flex: 1 }}>
+              <View style={styles.modalTitleContainer}>
                 <Text style={[styles.modalTitle, { fontSize: rs(16) }]}>
                   Chọn tập tải về
                 </Text>
@@ -978,7 +978,11 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                         </Text>
                       ) : dlItem?.status === 'queued' ? (
                         <Text
-                          style={[styles.epModalStatusText, { fontSize: rs(9), color: '#9CA3AF' }]}
+                          style={[
+                            styles.epModalStatusText,
+                            styles.epModalStatusQueued,
+                            { fontSize: rs(9) },
+                          ]}
                         >
                           Chờ tải
                         </Text>
@@ -1204,6 +1208,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#13141C',
     borderTopWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  loadingCenter: {
+    alignItems: 'center',
+  },
+  modalTitleContainer: {
+    flex: 1,
+  },
+  epModalStatusQueued: {
+    color: '#9CA3AF',
   },
   modalHeader: {
     flexDirection: 'row',

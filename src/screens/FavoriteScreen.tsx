@@ -96,7 +96,7 @@ export default function FavoriteScreen() {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<MovieItem>) => (
-      <View style={{ width: cardWidth, position: 'relative' }}>
+      <View style={[styles.itemWrapper, { width: cardWidth }]}>
         <MovieCard
           movie={item}
           cardWidth={cardWidth}
@@ -327,6 +327,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  itemWrapper: {
+    position: 'relative',
   },
   emptyIconCircle: {
     backgroundColor: 'rgba(239, 68, 68, 0.08)',

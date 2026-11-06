@@ -249,11 +249,11 @@ export default function ExploreScreen() {
         renderItem={renderItem}
         ListEmptyComponent={
           isLoading ? (
-            <View style={{ paddingVertical: rs(48), alignItems: 'center' }}>
+            <View style={[styles.centeredContainer, { paddingVertical: rs(48) }]}>
               <ActivityIndicator size="large" color={COLORS.primary} />
             </View>
           ) : (
-            <View style={{ paddingVertical: rs(48), alignItems: 'center' }}>
+            <View style={[styles.centeredContainer, { paddingVertical: rs(48) }]}>
               <Text style={[styles.emptyText, { fontSize: rs(14) }]}>
                 Không tìm thấy phim phù hợp
               </Text>
@@ -262,7 +262,7 @@ export default function ExploreScreen() {
         }
         ListFooterComponent={
           isFetchingNextPage ? (
-            <View style={{ paddingVertical: rs(16), alignItems: 'center' }}>
+            <View style={[styles.centeredContainer, { paddingVertical: rs(16) }]}>
               <ActivityIndicator size="small" color={COLORS.primary} />
             </View>
           ) : null
@@ -310,6 +310,9 @@ const styles = StyleSheet.create({
   filterDot: {
     position: 'absolute',
     backgroundColor: COLORS.primary,
+  },
+  centeredContainer: {
+    alignItems: 'center',
   },
   emptyText: {
     color: '#8A8F9E',

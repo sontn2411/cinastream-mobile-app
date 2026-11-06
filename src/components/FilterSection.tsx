@@ -97,11 +97,13 @@ function FilterSection({
     <View style={{ marginBottom: rs(8) }}>
       <Animated.View
         pointerEvents={visible ? 'auto' : 'none'}
-        style={{
-          height: animatedHeight,
-          opacity: anim,
-          overflow: 'hidden',
-        }}>
+        style={[
+          styles.animatedContainer,
+          {
+            height: animatedHeight,
+            opacity: anim,
+          },
+        ]}>
         <Animated.View
           onLayout={handleLayout}
           style={[
@@ -455,6 +457,9 @@ const styles = StyleSheet.create({
   summaryHighlight: {
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  animatedContainer: {
+    overflow: 'hidden',
   },
   resetText: {
     color: '#9CA3AF',

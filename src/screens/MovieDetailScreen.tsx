@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Modal,
   Pressable,
   ScrollView,
   Share,
@@ -17,17 +16,16 @@ import {
   Check,
   Clock,
   Download,
-  Film,
   Globe,
   Heart,
   Pause,
   Play,
-  Server,
   Share2,
   Star,
-  X,
 } from 'lucide-react-native';
 import VideoPlayer from '../components/VideoPlayer';
+import { DownloadPickerModal } from '../components/DownloadPickerModal';
+import { EpisodeSelector } from '../components/EpisodeSelector';
 import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { fetchMovieDetail } from '../services/movieApi';
@@ -690,101 +688,18 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
         ) : null}
 
         {/* Chọn Server & Danh sách Tập phim */}
-        {servers.length > 0 ? (
-          <View style={{ gap: rs(12) }}>
-            {/* Server Tabs */}
-            <View style={{ gap: rs(8) }}>
-              <View style={[styles.sectionHeaderRow, { gap: rs(6) }]}>
-                <Server color={COLORS.primary} size={rs(15)} />
-                <Text style={[styles.sectionTitle, { fontSize: rs(14) }]}>
-                  Chọn Server
-                </Text>
-              </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: rs(8) }}
-              >
-                {servers.map((srv, idx) => {
-                  const active = idx === selectedServerIdx;
-                  return (
-                    <Pressable
-                      key={`${srv.server_name}-${idx}`}
-                      onPress={() => handleSelectServer(idx)}
-                      style={[
-                        styles.serverPill,
-                        {
-                          paddingHorizontal: rs(14),
-                          paddingVertical: rs(7),
-                          borderRadius: rs(8),
-                        },
-                        active ? styles.serverPillActive : null,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.serverPillText,
-                          { fontSize: rs(12) },
-                          active ? styles.serverPillTextActive : null,
-                        ]}
-                      >
-                        {srv.server_name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-
-            {/* Lưới Tập phim */}
-            {episodes.length > 0 ? (
-              <View style={{ gap: rs(8) }}>
-                <View style={[styles.sectionHeaderRow, { gap: rs(6) }]}>
-                  <Film color={COLORS.primary} size={rs(15)} />
-                  <Text style={[styles.sectionTitle, { fontSize: rs(14) }]}>
-                    Danh sách tập ({episodes.length})
-                  </Text>
-                </View>
-
-                <View style={[styles.episodeGrid, { gap: epGap }]}>
-                  {episodes.map((ep, idx) => {
-                    const active = idx === selectedEpisodeIdx;
-                    const dlItem = serverDownloadMap.get(ep.slug);
-                    return (
-                      <Pressable
-                        key={`${ep.slug}-${idx}`}
-                        onPress={() => handleSelectEpisode(idx)}
-                        style={[
-                          styles.episodeBox,
-                          {
-                            width: epWidth,
-                            paddingVertical: rs(10),
-                            borderRadius: rs(8),
-                          },
-                          active ? styles.episodeBoxActive : null,
-                        ]}
-                      >
-                        <Text
-                          numberOfLines={1}
-                          style={[
-                            styles.episodeText,
-                            { fontSize: rs(12) },
-                            active ? styles.episodeTextActive : null,
-                          ]}
-                        >
-                          {ep.name}
-                        </Text>
-                        {dlItem?.status === 'completed' ? (
-                          <View style={styles.epDownloadedDot} />
-                        ) : null}
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
+        <EpisodeSelector
+          servers={servers}
+          selectedServerIdx={selectedServerIdx}
+          onSelectServer={handleSelectServer}
+          episodes={episodes}
+          selectedEpisodeIdx={selectedEpisodeIdx}
+          onSelectEpisode={handleSelectEpisode}
+          serverDownloadMap={serverDownloadMap}
+          epWidth={epWidth}
+          epGap={epGap}
+          rs={rs}
+        />
 
         {/* Nội dung phim */}
         {synopsis ? (
@@ -870,161 +785,22 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
       </ScrollView>
 
       {/* Modal chọn tập tải về cho Phim Bộ */}
-      <Modal
+      <DownloadPickerModal
         visible={showDownloadPicker}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowDownloadPicker(false)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View
-            style={[
-              styles.modalSheet,
-              {
-                borderTopLeftRadius: rs(20),
-                borderTopRightRadius: rs(20),
-                paddingHorizontal: rs(16),
-                paddingTop: rs(16),
-                paddingBottom: insets.bottom + rs(16),
-                gap: rs(14),
-              },
-            ]}
-          >
-            {/* Header Modal */}
-            <View style={styles.modalHeader}>
-              <View style={styles.modalTitleContainer}>
-                <Text style={[styles.modalTitle, { fontSize: rs(16) }]}>
-                  Chọn tập tải về
-                </Text>
-                <Text style={[styles.modalSubTitle, { fontSize: rs(12) }]}>
-                  {`${movie?.name ?? ''} • ${currentServerName}`}
-                </Text>
-              </View>
-              <Pressable
-                onPress={handleSelectAllDownloadable}
-                style={[
-                  styles.selectAllBtn,
-                  {
-                    paddingHorizontal: rs(10),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(8),
-                    marginRight: rs(8),
-                  },
-                ]}
-              >
-                <Text style={[styles.selectAllText, { fontSize: rs(12) }]}>
-                  Chọn tất cả
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setShowDownloadPicker(false)}
-                hitSlop={8}
-                style={[
-                  styles.closeModalCircle,
-                  { width: rs(32), height: rs(32), borderRadius: rs(16) },
-                ]}
-              >
-                <X color="#D1D5DB" size={rs(18)} />
-              </Pressable>
-            </View>
-
-            {/* Lưới tập phim trong Modal */}
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              style={{ maxHeight: rs(320) }}
-            >
-              <View style={[styles.episodeGrid, { gap: epGap }]}>
-                {episodes.map((ep, idx) => {
-                  const dlItem = serverDownloadMap.get(ep.slug);
-                  const isAlreadyDone = dlItem?.status === 'completed';
-                  const isBusy =
-                    dlItem?.status === 'downloading' ||
-                    dlItem?.status === 'queued';
-                  const isPicked = pickedEpisodeIndices.includes(idx);
-
-                  return (
-                    <Pressable
-                      key={`dl-${ep.slug}-${idx}`}
-                      disabled={isAlreadyDone || isBusy}
-                      onPress={() => togglePickEpisode(idx)}
-                      style={[
-                        styles.episodeBox,
-                        {
-                          width: epWidth,
-                          paddingVertical: rs(10),
-                          borderRadius: rs(8),
-                        },
-                        isPicked ? styles.episodeBoxActive : null,
-                        isAlreadyDone || isBusy
-                          ? styles.episodeBoxDisabled
-                          : null,
-                      ]}
-                    >
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          styles.episodeText,
-                          { fontSize: rs(12) },
-                          isPicked ? styles.episodeTextActive : null,
-                        ]}
-                      >
-                        {ep.name}
-                      </Text>
-                      {isAlreadyDone ? (
-                        <Text
-                          style={[styles.epModalStatusText, { fontSize: rs(9) }]}
-                        >
-                          Đã tải
-                        </Text>
-                      ) : dlItem?.status === 'queued' ? (
-                        <Text
-                          style={[
-                            styles.epModalStatusText,
-                            styles.epModalStatusQueued,
-                            { fontSize: rs(9) },
-                          ]}
-                        >
-                          Chờ tải
-                        </Text>
-                      ) : isBusy ? (
-                        <Text
-                          style={[styles.epModalStatusText, { fontSize: rs(9) }]}
-                        >
-                          {`${dlItem?.progress ?? 0}%`}
-                        </Text>
-                      ) : null}
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </ScrollView>
-
-            {/* Nút xác nhận tải xuống */}
-            <Pressable
-              disabled={pickedEpisodeIndices.length === 0}
-              onPress={handleConfirmBatchDownload}
-              style={[
-                styles.confirmDownloadBtn,
-                {
-                  height: rs(46),
-                  borderRadius: rs(12),
-                  gap: rs(8),
-                },
-                pickedEpisodeIndices.length === 0
-                  ? styles.confirmDownloadBtnDisabled
-                  : null,
-              ]}
-            >
-              <Download color="#FFFFFF" size={rs(18)} />
-              <Text style={[styles.confirmDownloadText, { fontSize: rs(14) }]}>
-                {pickedEpisodeIndices.length > 0
-                  ? `Tải về (${pickedEpisodeIndices.length} tập)`
-                  : 'Chọn tập để tải về'}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowDownloadPicker(false)}
+        movieName={movie?.name}
+        currentServerName={currentServerName}
+        episodes={episodes}
+        serverDownloadMap={serverDownloadMap}
+        pickedEpisodeIndices={pickedEpisodeIndices}
+        onTogglePickEpisode={togglePickEpisode}
+        onSelectAllDownloadable={handleSelectAllDownloadable}
+        onConfirmBatchDownload={handleConfirmBatchDownload}
+        insetsBottom={insets.bottom}
+        epWidth={epWidth}
+        epGap={epGap}
+        rs={rs}
+      />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

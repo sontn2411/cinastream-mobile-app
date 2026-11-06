@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import {
-  Alert,
   FlatList,
   Image,
   ListRenderItemInfo,
@@ -9,11 +8,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  ChevronLeft,
   Clock,
   Compass,
   History,
@@ -23,6 +22,7 @@ import {
 import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { BottomTabParamList } from '../navigation/BottomTabNavigator';
+import { showAppAlert } from '../store/useDialogStore';
 import { HistoryItem, useHistoryStore } from '../store/useHistoryStore';
 import { getImageSrc } from '../utils/image';
 import { useResponsive } from '../utils/responsive';
@@ -66,7 +66,6 @@ const keyExtractor = (item: HistoryItem) =>
 export default function HistoryScreen() {
   const { width, isTablet, rs } = useResponsive();
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList & BottomTabParamList>>();
@@ -82,8 +81,7 @@ export default function HistoryScreen() {
     (width - horizontalPad * 2 - gap * (numColumns - 1)) / numColumns,
   );
 
-  const topOffset =
-    (headerHeight > 0 ? headerHeight : insets.top + rs(64)) + rs(16);
+  const topOffset = rs(16);
 
   const handleResumePlay = useCallback(
     (item: HistoryItem) => {
@@ -99,7 +97,7 @@ export default function HistoryScreen() {
 
   const handleRemoveOne = useCallback(
     (item: HistoryItem) => {
-      Alert.alert(
+      showAppAlert(
         'Xóa lịch sử',
         `Bạn có muốn xóa "${item.movie.name}" khỏi lịch sử xem không?`,
         [
@@ -116,7 +114,7 @@ export default function HistoryScreen() {
   );
 
   const handleClearAll = useCallback(() => {
-    Alert.alert(
+    showAppAlert(
       'Xóa tất cả lịch sử',
       'Bạn có chắc chắn muốn xóa toàn bộ lịch sử xem phim không?',
       [
@@ -131,7 +129,11 @@ export default function HistoryScreen() {
   }, [clearHistory]);
 
   const handleGoExplore = useCallback(() => {
-    navigation.navigate('Explore');
+    navigation.navigate('Home');
+  }, [navigation]);
+
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
   }, [navigation]);
 
   const renderItem = useCallback(
@@ -313,6 +315,37 @@ export default function HistoryScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Top Bar Header */}
+      <View
+        style={[
+          styles.topHeader,
+          {
+            paddingTop: insets.top + rs(8),
+            paddingHorizontal: rs(16),
+            paddingBottom: rs(12),
+          },
+        ]}
+      >
+        <Pressable
+          onPress={handleGoBack}
+          hitSlop={8}
+          style={[
+            styles.backBtn,
+            { width: rs(36), height: rs(36), borderRadius: rs(18) },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Quay lại"
+        >
+          <ChevronLeft color="#FFFFFF" size={rs(22)} />
+        </Pressable>
+
+        <Text style={[styles.topHeaderTitle, { fontSize: rs(18) }]}>
+          Lịch sử xem
+        </Text>
+
+        <View style={{ width: rs(36) }} />
+      </View>
+
       <FlatList
         key={`history-grid-${numColumns}`}
         data={history}
@@ -437,6 +470,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0B0C10',
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  backBtn: {
+    backgroundColor: '#1E202B',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  topHeaderTitle: {
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   contentContainer: {},
   headerContainer: {

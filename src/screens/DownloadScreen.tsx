@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Image,
   ListRenderItemInfo,
@@ -19,6 +18,8 @@ import {
   Clock,
   Compass,
   Download,
+  DownloadCloud,
+  Film,
   Pause,
   Play,
   RotateCw,
@@ -27,29 +28,21 @@ import {
 import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { BottomTabParamList } from '../navigation/BottomTabNavigator';
+import { FacebookDownloadCard } from '../components/FacebookDownloadCard';
 import {
   DownloadEpisodeItem,
   groupDownloadsByMovie,
   MovieDownloadGroup,
   useDownloadStore,
 } from '../store/useDownloadStore';
+import { showAppAlert } from '../store/useDialogStore';
+import { useFbDownloadStore, FbDownloadItem } from '../store/useFbDownloadStore';
 import { MovieItem } from '../types/movie';
+import { formatBytes } from '../utils/format';
 import { getImageSrc } from '../utils/image';
 import { useResponsive } from '../utils/responsive';
 
-export function formatBytes(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes <= 0) {
-    return '0 MB';
-  }
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) {
-    return `${(mb / 1024).toFixed(1)} GB`;
-  }
-  if (mb >= 10) {
-    return `${Math.round(mb)} MB`;
-  }
-  return `${mb.toFixed(1)} MB`;
-}
+export { formatBytes };
 
 function extractEpisodeNumberBadge(
   episodeName: string,
@@ -143,6 +136,11 @@ export default function DownloadScreen() {
   const removeDownload = useDownloadStore(state => state.removeDownload);
   const clearAllDownloads = useDownloadStore(state => state.clearAllDownloads);
 
+  const fbDownloads = useFbDownloadStore(state => state.fbDownloads);
+  const retryFbDownload = useFbDownloadStore(state => state.retryFbDownload);
+  const removeFbDownload = useFbDownloadStore(state => state.removeFbDownload);
+  const [activeTab, setActiveTab] = useState<'movie' | 'facebook'>('movie');
+
   // Track collapsed movie slugs (by default all movie cards are expanded like the screenshot)
   const [collapsedSlugs, setCollapsedSlugs] = useState<Record<string, boolean>>(
     {},
@@ -189,7 +187,7 @@ export default function DownloadScreen() {
   const handleDeleteEpisode = useCallback(
     (ep: DownloadEpisodeItem) => {
       const title = formatEpisodeTitle(ep.episodeName, ep.episodeIndex);
-      Alert.alert(
+      showAppAlert(
         'Xóa tập đã tải',
         `Bạn có muốn xóa "${title}" của phim "${ep.movie.name}" và giải phóng dung lượng bộ nhớ không?`,
         [
@@ -208,7 +206,25 @@ export default function DownloadScreen() {
   );
 
   const handleClearAll = useCallback(() => {
-    Alert.alert(
+    if (activeTab === 'facebook') {
+      showAppAlert(
+        'Xóa tất cả video Facebook',
+        'Toàn bộ các video Facebook đã tải sẽ bị xóa khỏi bộ nhớ thiết bị. Bạn có chắc chắn không?',
+        [
+          { text: 'Hủy', style: 'cancel' },
+          {
+            text: 'Xóa tất cả',
+            style: 'destructive',
+            onPress: () => {
+              useFbDownloadStore.getState().clearAllFbDownloads();
+            },
+          },
+        ],
+      );
+      return;
+    }
+
+    showAppAlert(
       'Xóa tất cả video tải về',
       'Toàn bộ các tập phim đã tải và đang tải sẽ bị xóa sạch khỏi bộ nhớ thiết bị. Bạn có chắc chắn không?',
       [
@@ -222,7 +238,7 @@ export default function DownloadScreen() {
         },
       ],
     );
-  }, [clearAllDownloads]);
+  }, [activeTab, clearAllDownloads]);
 
   const handleGoExplore = useCallback(() => {
     navigation.navigate('Explore');
@@ -616,6 +632,58 @@ export default function DownloadScreen() {
     ],
   );
 
+  const handleDeleteFbItem = useCallback(
+    (item: FbDownloadItem) => {
+      showAppAlert(
+        'Xóa video Facebook',
+        `Bạn có muốn xóa video "${item.fileName}" và giải phóng bộ nhớ không?`,
+        [
+          { text: 'Hủy', style: 'cancel' },
+          {
+            text: 'Xóa',
+            style: 'destructive',
+            onPress: () => {
+              removeFbDownload(item.id);
+            },
+          },
+        ],
+      );
+    },
+    [removeFbDownload],
+  );
+
+  const handlePlayFbVideo = useCallback(
+    (item: FbDownloadItem) => {
+      if (item.status === 'completed' && item.localFilePath) {
+        navigation.navigate('LocalVideoPlayer', {
+          title: item.title || item.fileName,
+          uri: item.localFilePath,
+        });
+      }
+    },
+    [navigation],
+  );
+
+  const handleRetryFbVideo = useCallback(
+    (item: FbDownloadItem) => {
+      retryFbDownload(item.id);
+    },
+    [retryFbDownload],
+  );
+
+  const renderFbItem = useCallback(
+    ({ item }: ListRenderItemInfo<FbDownloadItem>) => (
+      <FacebookDownloadCard
+        item={item}
+        onPlay={handlePlayFbVideo}
+        onRetry={handleRetryFbVideo}
+        onDelete={handleDeleteFbItem}
+        rs={rs}
+      />
+    ),
+    [handleDeleteFbItem, handlePlayFbVideo, handleRetryFbVideo, rs],
+  );
+
   const renderItemSeparator = useCallback(
     () => <View style={{ height: rs(14) }} />,
     [rs],
@@ -631,113 +699,216 @@ export default function DownloadScreen() {
     [topOffset, rs, horizontalPad],
   );
 
+  const isMovieTab = activeTab === 'movie';
+  const validFbDownloads = fbDownloads.filter(
+    d => d.status === 'downloading' || (d.status === 'completed' && d.fileSize > 0),
+  );
+  const currentCount = isMovieTab ? downloads.length : validFbDownloads.length;
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={movieGroups}
-        keyExtractor={keyExtractor}
-        renderItem={renderGroupItem}
+        data={isMovieTab ? (movieGroups as unknown[]) : (validFbDownloads as unknown[])}
+        keyExtractor={item => {
+          if (isMovieTab) {
+            return keyExtractor(item as MovieDownloadGroup);
+          }
+          return (item as FbDownloadItem).id;
+        }}
+        renderItem={
+          isMovieTab
+            ? (renderGroupItem as unknown as (info: ListRenderItemInfo<unknown>) => React.ReactElement | null)
+            : (renderFbItem as unknown as (info: ListRenderItemInfo<unknown>) => React.ReactElement | null)
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}
         ItemSeparatorComponent={renderItemSeparator}
         ListHeaderComponent={
-          <View style={[styles.headerContainer, { marginBottom: rs(16) }]}>
-            <View style={styles.headerLeft}>
-              <Text style={[styles.headerTitle, { fontSize: rs(19) }]}>
-                Tải về
-              </Text>
-              {downloads.length > 0 ? (
-                <View
+          <View style={{ marginBottom: rs(16) }}>
+            <View style={[styles.headerContainer, { marginBottom: rs(12) }]}>
+              <View style={styles.headerLeft}>
+                <Text style={[styles.headerTitle, { fontSize: rs(19) }]}>
+                  Tải về
+                </Text>
+                {currentCount > 0 ? (
+                  <View
+                    style={[
+                      styles.countBadge,
+                      {
+                        paddingHorizontal: rs(8),
+                        paddingVertical: rs(2),
+                        borderRadius: rs(12),
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.countBadgeText, { fontSize: rs(11) }]}>
+                      {isMovieTab ? `${currentCount} tập` : `${currentCount} video`}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+
+              {currentCount > 0 ? (
+                <Pressable
+                  onPress={handleClearAll}
+                  hitSlop={8}
                   style={[
-                    styles.countBadge,
+                    styles.clearAllBtn,
                     {
-                      paddingHorizontal: rs(8),
-                      paddingVertical: rs(2),
-                      borderRadius: rs(12),
+                      paddingHorizontal: rs(10),
+                      paddingVertical: rs(6),
+                      borderRadius: rs(8),
+                      gap: rs(4),
                     },
                   ]}
                 >
-                  <Text style={[styles.countBadgeText, { fontSize: rs(11) }]}>
-                    {downloads.length} tập
+                  <Trash2 color="#EF4444" size={rs(14)} />
+                  <Text style={[styles.clearAllText, { fontSize: rs(12) }]}>
+                    Xóa tất cả
                   </Text>
-                </View>
+                </Pressable>
               ) : null}
             </View>
 
-            {downloads.length > 0 ? (
+            {/* Tabs Switch: Phim & Facebook */}
+            <View style={[styles.tabSegmentContainer, { borderRadius: rs(10), padding: rs(3) }]}>
               <Pressable
-                onPress={handleClearAll}
-                hitSlop={8}
+                onPress={() => setActiveTab('movie')}
                 style={[
-                  styles.clearAllBtn,
-                  {
-                    paddingHorizontal: rs(10),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(8),
-                    gap: rs(4),
-                  },
+                  styles.tabSegmentBtn,
+                  { paddingVertical: rs(7), borderRadius: rs(8), gap: rs(6) },
+                  isMovieTab && styles.tabSegmentBtnActive,
                 ]}
               >
-                <Trash2 color="#EF4444" size={rs(14)} />
-                <Text style={[styles.clearAllText, { fontSize: rs(12) }]}>
-                  Xóa tất cả
+                <Film color={isMovieTab ? '#FFFFFF' : '#8A8F9E'} size={rs(15)} />
+                <Text style={[styles.tabSegmentText, isMovieTab && styles.tabSegmentTextActive, { fontSize: rs(13) }]}>
+                  Phim ({downloads.length})
                 </Text>
               </Pressable>
-            ) : null}
+
+              <Pressable
+                onPress={() => setActiveTab('facebook')}
+                style={[
+                  styles.tabSegmentBtn,
+                  { paddingVertical: rs(7), borderRadius: rs(8), gap: rs(6) },
+                  !isMovieTab && styles.tabSegmentBtnActive,
+                ]}
+              >
+                <DownloadCloud color={!isMovieTab ? '#FFFFFF' : '#8A8F9E'} size={rs(15)} />
+                <Text style={[styles.tabSegmentText, !isMovieTab && styles.tabSegmentTextActive, { fontSize: rs(13) }]}>
+                  Facebook ({validFbDownloads.length})
+                </Text>
+              </Pressable>
+            </View>
           </View>
         }
         ListEmptyComponent={
-          <View
-            style={[
-              styles.emptyContainer,
-              {
-                paddingVertical: rs(60),
-                paddingHorizontal: rs(24),
-                gap: rs(14),
-              },
-            ]}
-          >
+          isMovieTab ? (
             <View
               style={[
-                styles.emptyIconCircle,
+                styles.emptyContainer,
                 {
-                  width: rs(80),
-                  height: rs(80),
-                  borderRadius: rs(40),
+                  paddingVertical: rs(60),
+                  paddingHorizontal: rs(24),
+                  gap: rs(14),
                 },
               ]}
             >
-              <Download color={COLORS.primary} size={rs(38)} />
-            </View>
+              <View
+                style={[
+                  styles.emptyIconCircle,
+                  {
+                    width: rs(80),
+                    height: rs(80),
+                    borderRadius: rs(40),
+                  },
+                ]}
+              >
+                <Download color={COLORS.primary} size={rs(38)} />
+              </View>
 
-            <Text style={[styles.emptyTitle, { fontSize: rs(18) }]}>
-              Chưa có phim tải về
-            </Text>
-
-            <Text style={[styles.emptySubtitle, { fontSize: rs(13) }]}>
-              Nhấn vào biểu tượng Tải về tại màn hình chi tiết phim để lưu các
-              tập phim yêu thích và thưởng thức mượt mà mọi lúc!
-            </Text>
-
-            <Pressable
-              onPress={handleGoExplore}
-              style={[
-                styles.exploreBtn,
-                {
-                  marginTop: rs(8),
-                  height: rs(44),
-                  paddingHorizontal: rs(22),
-                  borderRadius: rs(22),
-                  gap: rs(8),
-                },
-              ]}
-            >
-              <Compass color="#FFFFFF" size={rs(18)} />
-              <Text style={[styles.exploreBtnText, { fontSize: rs(14) }]}>
-                Khám phá ngay
+              <Text style={[styles.emptyTitle, { fontSize: rs(18) }]}>
+                Chưa có phim tải về
               </Text>
-            </Pressable>
-          </View>
+
+              <Text style={[styles.emptySubtitle, { fontSize: rs(13) }]}>
+                Nhấn vào biểu tượng Tải về tại màn hình chi tiết phim để lưu các
+                tập phim yêu thích và thưởng thức mượt mà mọi lúc!
+              </Text>
+
+              <Pressable
+                onPress={handleGoExplore}
+                style={[
+                  styles.exploreBtn,
+                  {
+                    marginTop: rs(8),
+                    height: rs(44),
+                    paddingHorizontal: rs(22),
+                    borderRadius: rs(22),
+                    gap: rs(8),
+                  },
+                ]}
+              >
+                <Compass color="#FFFFFF" size={rs(18)} />
+                <Text style={[styles.exploreBtnText, { fontSize: rs(14) }]}>
+                  Khám phá ngay
+                </Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.emptyContainer,
+                {
+                  paddingVertical: rs(60),
+                  paddingHorizontal: rs(24),
+                  gap: rs(14),
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.emptyIconCircle,
+                  styles.fbEmptyIconCircle,
+                  {
+                    width: rs(80),
+                    height: rs(80),
+                    borderRadius: rs(40),
+                  },
+                ]}
+              >
+                <DownloadCloud color="#1877F2" size={rs(38)} />
+              </View>
+
+              <Text style={[styles.emptyTitle, { fontSize: rs(18) }]}>
+                Chưa có video Facebook tải về
+              </Text>
+
+              <Text style={[styles.emptySubtitle, { fontSize: rs(13) }]}>
+                Mở tab Facebook để dán link reel hoặc clip yêu thích cần tải về!
+              </Text>
+
+              <Pressable
+                onPress={() => navigation.navigate('Facebook')}
+                style={[
+                  styles.exploreBtn,
+                  styles.fbExploreBtn,
+                  {
+                    marginTop: rs(8),
+                    height: rs(44),
+                    paddingHorizontal: rs(22),
+                    borderRadius: rs(22),
+                    gap: rs(8),
+                  },
+                ]}
+              >
+                <DownloadCloud color="#FFFFFF" size={rs(18)} />
+                <Text style={[styles.exploreBtnText, { fontSize: rs(14) }]}>
+                  Đến trang tải Facebook
+                </Text>
+              </Pressable>
+            </View>
+          )
         }
       />
     </View>
@@ -974,5 +1145,35 @@ const styles = StyleSheet.create({
   exploreBtnText: {
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  tabSegmentContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#161822',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  tabSegmentBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabSegmentBtnActive: {
+    backgroundColor: '#262A3B',
+  },
+  tabSegmentText: {
+    color: '#8A8F9E',
+    fontWeight: '600',
+  },
+  tabSegmentTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  fbEmptyIconCircle: {
+    backgroundColor: 'rgba(24, 119, 242, 0.08)',
+    borderColor: 'rgba(24, 119, 242, 0.25)',
+  },
+  fbExploreBtn: {
+    backgroundColor: '#1877F2',
   },
 });

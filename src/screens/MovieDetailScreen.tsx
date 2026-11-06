@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   Share,
@@ -34,6 +33,7 @@ import {
   StartDownloadPayload,
   useDownloadStore,
 } from '../store/useDownloadStore';
+import { showAppAlert } from '../store/useDialogStore';
 import { useFavoriteStore } from '../store/useFavoriteStore';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { EpisodeItem } from '../types/movie';
@@ -70,7 +70,10 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
   const { width, isTablet, rs } = useResponsive();
   const insets = useSafeAreaInsets();
 
-  const historyItem = useHistoryStore(state => state.getHistoryItem(slug));
+  const historyItem = useMemo(
+    () => useHistoryStore.getState().getHistoryItem(slug),
+    [slug],
+  );
   const saveProgress = useHistoryStore(state => state.saveProgress);
 
   const [selectedServerIdx, setSelectedServerIdx] = useState(
@@ -240,7 +243,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
 
   const handlePressDownloadButton = useCallback(() => {
     if (!movie || episodes.length === 0) {
-      Alert.alert(
+      showAppAlert(
         'Đang tải dữ liệu',
         'Vui lòng đợi thông tin tập phim tải xong trước khi tải về.',
       );
@@ -260,7 +263,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
 
     // Phim lẻ (1 tập)
     if (!currentEpisode?.link_m3u8) {
-      Alert.alert('Không hỗ trợ', 'Tập phim này chưa có luồng M3U8 để tải về.');
+      showAppAlert('Không hỗ trợ', 'Tập phim này chưa có luồng M3U8 để tải về.');
       return;
     }
 
@@ -285,13 +288,12 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
         currentEpisodeDownload.status === 'downloading'
           ? `Phim đang tải (${currentEpisodeDownload.progress}%). Bạn có thể quản lý tiến trình trong tab Tải về.`
           : 'Tập phim đang trong hàng đợi tải xuống.';
-      Alert.alert(
+      showAppAlert(
         currentEpisodeDownload.status === 'downloading'
           ? 'Đang tải về'
           : 'Đang trong hàng đợi',
         msg,
         [
-          { text: 'Đóng', style: 'cancel' },
           {
             text: 'Tạm dừng',
             onPress: () => pauseDownload(currentEpisodeDownload.id),
@@ -301,17 +303,17 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
             style: 'destructive',
             onPress: () => removeDownload(currentEpisodeDownload.id),
           },
+          { text: 'Đóng', style: 'cancel' },
         ],
       );
       return;
     }
 
     if (currentEpisodeDownload.status === 'paused') {
-      Alert.alert(
+      showAppAlert(
         'Tạm dừng tải',
         `Bản tải đang tạm dừng ở ${currentEpisodeDownload.progress}%.`,
         [
-          { text: 'Đóng', style: 'cancel' },
           {
             text: 'Tiếp tục tải',
             onPress: () => resumeDownload(currentEpisodeDownload.id),
@@ -321,13 +323,14 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
             style: 'destructive',
             onPress: () => removeDownload(currentEpisodeDownload.id),
           },
+          { text: 'Đóng', style: 'cancel' },
         ],
       );
       return;
     }
 
     // Completed
-    Alert.alert(
+    showAppAlert(
       'Đã tải về',
       'Phim này đã được tải hoàn tất trong tab Tải về.',
       [

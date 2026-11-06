@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -24,7 +24,7 @@ interface Props {
   rs: (size: number) => number;
 }
 
-export function EpisodeSelector({
+export const EpisodeSelector = memo(function EpisodeSelectorComponent({
   servers,
   selectedServerIdx,
   onSelectServer,
@@ -136,7 +136,7 @@ export function EpisodeSelector({
       ) : null}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   sectionHeaderRow: {

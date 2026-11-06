@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   Modal,
   Pressable,
@@ -29,7 +29,7 @@ interface Props {
   rs: (size: number) => number;
 }
 
-export function DownloadPickerModal({
+export const DownloadPickerModal = memo(function DownloadPickerModalComponent({
   visible,
   onClose,
   movieName,
@@ -204,7 +204,7 @@ export function DownloadPickerModal({
       </View>
     </Modal>
   );
-}
+});
 
 const styles = StyleSheet.create({
   modalOverlay: {

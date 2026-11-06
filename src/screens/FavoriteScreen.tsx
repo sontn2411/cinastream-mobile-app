@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import {
-  Alert,
   FlatList,
   ListRenderItemInfo,
   Pressable,
@@ -22,6 +21,7 @@ import MovieCard from '../components/MovieCard';
 import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { BottomTabParamList } from '../navigation/BottomTabNavigator';
+import { showAppAlert } from '../store/useDialogStore';
 import { useFavoriteStore } from '../store/useFavoriteStore';
 import { MovieItem } from '../types/movie';
 import { useResponsive } from '../utils/responsive';
@@ -59,7 +59,7 @@ export default function FavoriteScreen() {
 
   const handleRemoveOne = useCallback(
     (movie: MovieItem) => {
-      Alert.alert(
+      showAppAlert(
         'Bỏ yêu thích',
         `Bạn có muốn xóa "${movie.name}" khỏi danh sách yêu thích?`,
         [
@@ -76,7 +76,7 @@ export default function FavoriteScreen() {
   );
 
   const handleClearAll = useCallback(() => {
-    Alert.alert(
+    showAppAlert(
       'Xóa tất cả',
       'Bạn có chắc chắn muốn xóa toàn bộ danh sách phim yêu thích không?',
       [

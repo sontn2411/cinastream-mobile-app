@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Play, Star } from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
@@ -34,9 +34,13 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
       : null;
   const categoryName = movie.category?.[0]?.name || 'Phim mới';
 
+  const handlePress = useCallback(() => {
+    onPress?.(movie);
+  }, [movie, onPress]);
+
   return (
     <Pressable
-      onPress={() => onPress?.(movie)}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.card,
         {

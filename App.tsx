@@ -6,6 +6,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppDialogModal } from './src/components/AppDialogModal';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import AppNavigator from './src/navigation/AppNavigator';
 
@@ -13,7 +14,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
       retry: 1,
+      networkMode: 'offlineFirst',
     },
   },
 });
@@ -37,6 +40,7 @@ function App() {
             backgroundColor="transparent"
           />
           <AppNavigator />
+          <AppDialogModal />
         </SafeAreaProvider>
       </QueryClientProvider>
     </ErrorBoundary>

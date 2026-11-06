@@ -1,21 +1,31 @@
 import React, { useCallback } from 'react';
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Compass, Heart, Download, History } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {
+  Compass,
+  Heart,
+  Download,
+  DownloadCloud,
+  Settings,
+} from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
 import ExploreScreen from '../screens/ExploreScreen';
 import FavoriteScreen from '../screens/FavoriteScreen';
 import DownloadScreen from '../screens/DownloadScreen';
-import HistoryScreen from '../screens/HistoryScreen';
+import FacebookDownloadScreen from '../screens/FacebookDownloadScreen';
+import { RootStackParamList } from './AppNavigator';
 import { useDownloadStore } from '../store/useDownloadStore';
+import { useFbDownloadStore } from '../store/useFbDownloadStore';
 import { useResponsive } from '../utils/responsive';
 
 export type BottomTabParamList = {
   Explore: undefined;
   Favorite: undefined;
   Download: undefined;
-  History: undefined;
+  Facebook: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -66,15 +76,44 @@ function HeaderBrand() {
   );
 }
 
+function HeaderRightSetting() {
+  const { rs } = useResponsive();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  return (
+    <Pressable
+      onPress={() => navigation.navigate('Setting')}
+      hitSlop={8}
+      style={[
+        styles.headerSettingBtn,
+        {
+          marginRight: rs(16),
+          width: rs(36),
+          height: rs(36),
+          borderRadius: rs(18),
+        },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel="Cài đặt"
+    >
+      <Settings color="#D1D5DB" size={rs(20)} />
+    </Pressable>
+  );
+}
+
 export default function BottomTabNavigator() {
   const { rs } = useResponsive();
   const iconSize = rs(22);
-  const activeDownloadCount = useDownloadStore(
+  const activeMovieDownloads = useDownloadStore(
     state =>
       state.downloads.filter(
         d => d.status === 'downloading' || d.status === 'queued',
       ).length,
   );
+  const activeFbDownloads = useFbDownloadStore(
+    state => state.fbDownloads.filter(d => d.status === 'downloading').length,
+  );
+  const activeDownloadCount = activeMovieDownloads + activeFbDownloads;
 
   const renderExploreIcon = useCallback(
     ({ color }: { color: string }) => <Compass color={color} size={iconSize} />,
@@ -91,8 +130,10 @@ export default function BottomTabNavigator() {
     [iconSize],
   );
 
-  const renderHistoryIcon = useCallback(
-    ({ color }: { color: string }) => <History color={color} size={iconSize} />,
+  const renderFacebookIcon = useCallback(
+    ({ color }: { color: string }) => (
+      <DownloadCloud color={color} size={iconSize} />
+    ),
     [iconSize],
   );
 
@@ -103,6 +144,7 @@ export default function BottomTabNavigator() {
         headerTransparent: true,
         headerTitle: '',
         headerLeft: HeaderBrand,
+        headerRight: HeaderRightSetting,
         headerBackground: GlassBlurBackground,
         headerStyle: styles.header,
         tabBarStyle: [
@@ -155,11 +197,11 @@ export default function BottomTabNavigator() {
         }}
       />
       <Tab.Screen
-        name="History"
-        component={HistoryScreen}
+        name="Facebook"
+        component={FacebookDownloadScreen}
         options={{
-          tabBarLabel: 'Lịch sử',
-          tabBarIcon: renderHistoryIcon,
+          tabBarLabel: 'Facebook',
+          tabBarIcon: renderFacebookIcon,
         }}
       />
     </Tab.Navigator>
@@ -180,6 +222,13 @@ const styles = StyleSheet.create({
   },
   headerBrand: {
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerSettingBtn: {
+    backgroundColor: '#1E202B',
+    borderWidth: 1,
+    borderColor: '#2F3346',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   brandTitle: {

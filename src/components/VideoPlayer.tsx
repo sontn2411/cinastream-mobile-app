@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -167,6 +167,12 @@ function VideoPlayer({
     }
   }, [error, started, onStart, onTogglePlay]);
 
+  const videoSource = useMemo(() => (uri ? { uri } : undefined), [uri]);
+  const backdropSource = useMemo(
+    () => (backdropUri ? { uri: backdropUri } : undefined),
+    [backdropUri],
+  );
+
   const progressPercent =
     duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
   const overlayVisible = !started || showControls || error;
@@ -178,10 +184,10 @@ function VideoPlayer({
 
   return (
     <View style={[styles.container, { height }]}>
-      {started && uri && !error ? (
+      {started && videoSource && !error ? (
         <Video
           ref={videoRef}
-          source={{ uri }}
+          source={videoSource}
           style={StyleSheet.absoluteFill}
           resizeMode="contain"
           paused={!playing}
@@ -214,9 +220,9 @@ function VideoPlayer({
           onFullscreenPlayerWillDismiss={() => setFullscreen(false)}
           onEnd={onEnd}
         />
-      ) : backdropUri ? (
+      ) : backdropSource ? (
         <Image
-          source={{ uri: backdropUri }}
+          source={backdropSource}
           style={StyleSheet.absoluteFill}
           resizeMode="cover"
         />

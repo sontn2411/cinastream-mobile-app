@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Alert,
   FlatList,
@@ -282,6 +282,30 @@ export default function HistoryScreen() {
     [cardWidth, handleResumePlay, handleRemoveOne, rs],
   );
 
+  const contentContainerStyle = useMemo(
+    () => [
+      styles.contentContainer,
+      {
+        paddingTop: topOffset,
+        paddingBottom: rs(88),
+        paddingHorizontal: horizontalPad,
+        flexGrow: 1,
+      },
+    ],
+    [topOffset, rs, horizontalPad],
+  );
+
+  const columnWrapperStyle = useMemo(
+    () =>
+      numColumns > 1 && history.length > 0
+        ? {
+            gap,
+            marginBottom: gap,
+          }
+        : undefined,
+    [numColumns, history.length, gap],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -291,23 +315,8 @@ export default function HistoryScreen() {
         renderItem={renderItem}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.contentContainer,
-          {
-            paddingTop: topOffset,
-            paddingBottom: rs(88),
-            paddingHorizontal: horizontalPad,
-            flexGrow: 1,
-          },
-        ]}
-        columnWrapperStyle={
-          numColumns > 1 && history.length > 0
-            ? {
-                gap,
-                marginBottom: gap,
-              }
-            : undefined
-        }
+        contentContainerStyle={contentContainerStyle}
+        columnWrapperStyle={columnWrapperStyle}
         ItemSeparatorComponent={
           numColumns === 1
             ? () => <View style={{ height: gap }} />

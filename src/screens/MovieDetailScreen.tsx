@@ -101,7 +101,13 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
   );
   const toggleFavorite = useFavoriteStore(state => state.toggleFavorite);
 
-  const downloads = useDownloadStore(state => state.downloads);
+  // Select only downloads relevant to this movie to prevent re-renders when other movies are downloading
+  const downloads = useDownloadStore(
+    useCallback(
+      state => state.downloads.filter(d => d.movie.slug === slug),
+      [slug],
+    ),
+  );
   const startDownload = useDownloadStore(state => state.startDownload);
   const startBatchDownloads = useDownloadStore(
     state => state.startBatchDownloads,

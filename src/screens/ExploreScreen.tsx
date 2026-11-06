@@ -132,6 +132,23 @@ export default function ExploreScreen() {
   const topOffset =
     (headerHeight > 0 ? headerHeight : insets.top + rs(64)) + rs(16);
 
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingTop: topOffset,
+      paddingBottom: rs(84),
+      paddingHorizontal: horizontalPad,
+    }),
+    [topOffset, horizontalPad, rs],
+  );
+
+  const columnWrapperStyle = useMemo(
+    () => ({
+      gap,
+      marginBottom: gap,
+    }),
+    [gap],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -140,15 +157,8 @@ export default function ExploreScreen() {
         keyExtractor={keyExtractor}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: topOffset,
-          paddingBottom: rs(84),
-          paddingHorizontal: horizontalPad,
-        }}
-        columnWrapperStyle={{
-          gap,
-          marginBottom: gap,
-        }}
+        contentContainerStyle={contentContainerStyle}
+        columnWrapperStyle={columnWrapperStyle}
         refreshing={isRefetching && !isFetchingNextPage}
         onRefresh={handleRefresh}
         onEndReached={handleEndReached}

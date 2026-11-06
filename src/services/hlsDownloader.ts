@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 
 const CONCURRENCY = 5;
@@ -6,6 +7,16 @@ const MAX_RETRIES = 3;
 
 export const BASE_DOWNLOAD_DIR = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/downloads`;
 export const POSTERS_DOWNLOAD_DIR = `${BASE_DOWNLOAD_DIR}/posters`;
+
+export async function excludeFromIosBackup(path: string): Promise<void> {
+  if (Platform.OS === 'ios') {
+    try {
+      await ReactNativeBlobUtil.ios.excludeFromBackupKey(path);
+    } catch {
+      // Ignore if backup exclusion fails or is unsupported in current environment
+    }
+  }
+}
 
 export async function ensureNoMediaFile(dirPath: string): Promise<void> {
   try {
@@ -53,6 +64,7 @@ export async function downloadAndSaveMoviePoster(
     const postersDirExists = await ReactNativeBlobUtil.fs.exists(POSTERS_DOWNLOAD_DIR);
     if (!postersDirExists) {
       await ReactNativeBlobUtil.fs.mkdir(POSTERS_DOWNLOAD_DIR);
+      await excludeFromIosBackup(POSTERS_DOWNLOAD_DIR);
     }
     await ensureNoMediaFile(POSTERS_DOWNLOAD_DIR);
 
@@ -549,11 +561,13 @@ export async function startHlsDownloadJob(params: {
     const baseExists = await ReactNativeBlobUtil.fs.exists(BASE_DOWNLOAD_DIR);
     if (!baseExists) {
       await ReactNativeBlobUtil.fs.mkdir(BASE_DOWNLOAD_DIR);
+      await excludeFromIosBackup(BASE_DOWNLOAD_DIR);
     }
 
     const dirExists = await ReactNativeBlobUtil.fs.exists(directoryPath);
     if (!dirExists) {
       await ReactNativeBlobUtil.fs.mkdir(directoryPath);
+      await excludeFromIosBackup(directoryPath);
     } else {
       // Clean any leftover .part files from previous interrupted session
       await cleanPartFilesInDir(directoryPath);

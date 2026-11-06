@@ -13,6 +13,12 @@
       "skillPath": ".agent/skills/react-native-best-practices/SKILL.md",
       "computedHash": "e9b697439bb7a24daf9dca36f7988f43cc06320e14210d232a5db145244a7461"
     },
+    "security-audit": {
+      "source": "cloudflare/security-audit-skill",
+      "sourceType": "github",
+      "skillPath": "skills/security-audit/SKILL.md",
+      "computedHash": "e6b2e317de75da97e9de18d842982994803f3a67a4a6d8154a82323dc3de8528"
+    },
     "vercel-react-native-skills": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",

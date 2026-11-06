@@ -621,6 +621,16 @@ export default function DownloadScreen() {
     [rs],
   );
 
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingTop: topOffset,
+      paddingBottom: rs(96),
+      paddingHorizontal: horizontalPad,
+      flexGrow: 1,
+    }),
+    [topOffset, rs, horizontalPad],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -628,12 +638,7 @@ export default function DownloadScreen() {
         keyExtractor={keyExtractor}
         renderItem={renderGroupItem}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: topOffset,
-          paddingBottom: rs(96),
-          paddingHorizontal: horizontalPad,
-          flexGrow: 1,
-        }}
+        contentContainerStyle={contentContainerStyle}
         ItemSeparatorComponent={renderItemSeparator}
         ListHeaderComponent={
           <View style={[styles.headerContainer, { marginBottom: rs(16) }]}>

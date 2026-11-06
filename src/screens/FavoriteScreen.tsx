@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Alert,
   FlatList,
@@ -125,6 +125,30 @@ export default function FavoriteScreen() {
     [cardWidth, handlePressMovie, handleRemoveOne, rs],
   );
 
+  const contentContainerStyle = useMemo(
+    () => [
+      styles.contentContainer,
+      {
+        paddingTop: topOffset,
+        paddingBottom: rs(88),
+        paddingHorizontal: horizontalPad,
+        flexGrow: 1,
+      },
+    ],
+    [topOffset, rs, horizontalPad],
+  );
+
+  const columnWrapperStyle = useMemo(
+    () =>
+      favorites.length > 0
+        ? {
+            gap,
+            marginBottom: gap,
+          }
+        : undefined,
+    [favorites.length, gap],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -134,23 +158,8 @@ export default function FavoriteScreen() {
         renderItem={renderItem}
         numColumns={numColumns}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.contentContainer,
-          {
-            paddingTop: topOffset,
-            paddingBottom: rs(88),
-            paddingHorizontal: horizontalPad,
-            flexGrow: 1,
-          },
-        ]}
-        columnWrapperStyle={
-          favorites.length > 0
-            ? {
-                gap,
-                marginBottom: gap,
-              }
-            : undefined
-        }
+        contentContainerStyle={contentContainerStyle}
+        columnWrapperStyle={columnWrapperStyle}
         removeClippedSubviews
         initialNumToRender={8}
         maxToRenderPerBatch={8}

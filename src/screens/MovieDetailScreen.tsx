@@ -621,14 +621,14 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 style={[
                   styles.ratingBadge,
                   {
-                    paddingHorizontal: rs(8),
-                    paddingVertical: rs(3),
-                    borderRadius: rs(6),
+                    paddingHorizontal: rs(9),
+                    paddingVertical: rs(3.5),
+                    borderRadius: rs(10),
                     gap: rs(4),
                   },
                 ]}
               >
-                <Star color="#FBBF24" fill="#FBBF24" size={rs(12)} />
+                <Star color={COLORS.accent} fill={COLORS.accent} size={rs(12)} />
                 <Text style={[styles.ratingValue, { fontSize: rs(12) }]}>
                   {rating}
                 </Text>
@@ -640,9 +640,9 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 style={[
                   styles.qualityTag,
                   {
-                    paddingHorizontal: rs(8),
-                    paddingVertical: rs(3),
-                    borderRadius: rs(6),
+                    paddingHorizontal: rs(9),
+                    paddingVertical: rs(3.5),
+                    borderRadius: rs(10),
                   },
                 ]}
               >
@@ -657,9 +657,9 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 style={[
                   styles.metaTag,
                   {
-                    paddingHorizontal: rs(8),
-                    paddingVertical: rs(3),
-                    borderRadius: rs(6),
+                    paddingHorizontal: rs(9),
+                    paddingVertical: rs(3.5),
+                    borderRadius: rs(10),
                   },
                 ]}
               >
@@ -674,9 +674,9 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 style={[
                   styles.metaTag,
                   {
-                    paddingHorizontal: rs(8),
-                    paddingVertical: rs(3),
-                    borderRadius: rs(6),
+                    paddingHorizontal: rs(9),
+                    paddingVertical: rs(3.5),
+                    borderRadius: rs(10),
                   },
                 ]}
               >
@@ -691,14 +691,14 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 style={[
                   styles.metaTag,
                   {
-                    paddingHorizontal: rs(8),
-                    paddingVertical: rs(3),
-                    borderRadius: rs(6),
+                    paddingHorizontal: rs(9),
+                    paddingVertical: rs(3.5),
+                    borderRadius: rs(10),
                     gap: rs(4),
                   },
                 ]}
               >
-                <Clock color="#9CA3AF" size={rs(11)} />
+                <Clock color={COLORS.primary} size={rs(11)} />
                 <Text style={[styles.metaTagText, { fontSize: rs(11) }]}>
                   {movie.time}
                 </Text>
@@ -717,13 +717,14 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 setIsPlaying(prev => !prev);
               }
             }}
-            style={[
+            style={({ pressed }) => [
               styles.watchNowBtn,
               {
-                height: rs(42),
-                borderRadius: rs(10),
+                height: rs(46),
+                borderRadius: rs(16),
                 paddingHorizontal: rs(18),
                 gap: rs(8),
+                transform: [{ translateY: pressed ? 2 : 0 }],
               },
             ]}
           >
@@ -753,18 +754,19 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
             accessibilityLabel={
               isFavorite ? 'Bỏ yêu thích phim này' : 'Yêu thích phim này'
             }
-            style={[
+            style={({ pressed }) => [
               styles.actionIconBtn,
               {
-                width: rs(42),
-                height: rs(42),
-                borderRadius: rs(10),
+                width: rs(46),
+                height: rs(46),
+                borderRadius: rs(16),
+                transform: [{ translateY: pressed ? 2 : 0 }],
               },
               isFavorite ? styles.actionIconBtnActive : null,
             ]}
           >
             <Heart
-              color={isFavorite ? COLORS.primary : '#D1D5DB'}
+              color={isFavorite ? COLORS.primary : COLORS.ink}
               fill={isFavorite ? COLORS.primary : 'none'}
               size={rs(18)}
             />
@@ -774,12 +776,13 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
             onPress={handlePressDownloadButton}
             accessibilityRole="button"
             accessibilityLabel="Tải về"
-            style={[
+            style={({ pressed }) => [
               styles.actionIconBtn,
               {
-                width: rs(42),
-                height: rs(42),
-                borderRadius: rs(10),
+                width: rs(46),
+                height: rs(46),
+                borderRadius: rs(16),
+                transform: [{ translateY: pressed ? 2 : 0 }],
               },
               isCurrentDownloaded || isCurrentDownloading
                 ? styles.actionIconBtnActive
@@ -793,24 +796,25 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
                 {`${currentEpisodeDownload?.progress ?? 0}%`}
               </Text>
             ) : isCurrentDownloaded ? (
-              <Check color={COLORS.primary} size={rs(18)} />
+              <Check color={COLORS.success} size={rs(18)} />
             ) : (
-              <Download color="#D1D5DB" size={rs(18)} />
+              <Download color={COLORS.ink} size={rs(18)} />
             )}
           </Pressable>
 
           <Pressable
             onPress={handleShare}
-            style={[
+            style={({ pressed }) => [
               styles.actionIconBtn,
               {
-                width: rs(42),
-                height: rs(42),
-                borderRadius: rs(10),
+                width: rs(46),
+                height: rs(46),
+                borderRadius: rs(16),
+                transform: [{ translateY: pressed ? 2 : 0 }],
               },
             ]}
           >
-            <Share2 color="#D1D5DB" size={rs(18)} />
+            <Share2 color={COLORS.ink} size={rs(18)} />
           </Pressable>
         </View>
 
@@ -883,7 +887,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
 
           {movie?.country?.length ? (
             <View style={[styles.infoRow, { gap: rs(6) }]}>
-              <Globe color="#9CA3AF" size={rs(13)} />
+              <Globe color={COLORS.primary} size={rs(13)} />
               <Text style={[styles.infoLabel, { fontSize: rs(12) }]}>
                 Quốc gia:
               </Text>
@@ -941,15 +945,15 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   movieTitle: {
-    color: '#FFFFFF',
-    fontWeight: '800',
+    color: COLORS.ink,
+    fontWeight: '900',
   },
   originTitle: {
-    color: '#9CA3AF',
-    fontWeight: '500',
+    color: COLORS.inkSoft,
+    fontWeight: '600',
   },
   metaWrap: {
     flexDirection: 'row',
@@ -959,11 +963,13 @@ const styles = StyleSheet.create({
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(251, 191, 36, 0.14)',
+    backgroundColor: COLORS.accentSoft,
+    borderWidth: 1.5,
+    borderColor: '#FFD670',
   },
   ratingValue: {
-    color: '#FBBF24',
-    fontWeight: '700',
+    color: '#B87300',
+    fontWeight: '800',
   },
   qualityTag: {
     backgroundColor: COLORS.primary,
@@ -975,17 +981,17 @@ const styles = StyleSheet.create({
   metaTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   metaTagText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '700',
   },
   yearTagText: {
-    color: '#F59E0B',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   actionRow: {
     flexDirection: 'row',
@@ -997,103 +1003,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.primaryDark,
   },
   watchNowText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   actionIconBtn: {
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   actionIconBtnActive: {
     borderColor: COLORS.primary,
-    backgroundColor: 'rgba(255, 0, 0, 0.12)',
+    borderBottomColor: COLORS.primaryDark,
+    backgroundColor: COLORS.primarySoft,
   },
   downloadPercentBadge: {
     color: COLORS.primary,
     fontWeight: '800',
   },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  serverPill: {
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
-  },
-  serverPillActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  serverPillText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
-  },
-  serverPillTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  episodeGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  episodeBox: {
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  episodeBoxActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  episodeBoxDisabled: {
-    opacity: 0.45,
-  },
-  episodeText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
-  },
-  episodeTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  epDownloadedDot: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
-  },
-  epModalStatusText: {
-    color: '#10B981',
-    fontWeight: '700',
-    marginTop: 2,
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   synopsisText: {
-    color: '#D1D5DB',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
   },
   readMoreText: {
     color: COLORS.primary,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   infoCard: {
-    backgroundColor: '#14151C',
-    borderWidth: 1,
-    borderColor: '#1F222E',
+    backgroundColor: COLORS.surface,
+    borderWidth: 2,
+    borderColor: COLORS.border,
   },
   infoRow: {
     flexDirection: 'row',
@@ -1101,69 +1053,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   infoLabel: {
-    color: '#9CA3AF',
-    fontWeight: '600',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   infoValue: {
     flex: 1,
-    color: '#E5E7EB',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
-    justifyContent: 'flex-end',
-  },
-  modalSheet: {
-    backgroundColor: '#13141C',
-    borderTopWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    color: COLORS.ink,
+    fontWeight: '600',
   },
   loadingCenter: {
     alignItems: 'center',
-  },
-  modalTitleContainer: {
-    flex: 1,
-  },
-  epModalStatusQueued: {
-    color: '#9CA3AF',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  modalTitle: {
-    color: '#FFFFFF',
-    fontWeight: '800',
-  },
-  modalSubTitle: {
-    color: '#9CA3AF',
-    marginTop: 2,
-  },
-  selectAllBtn: {
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.35)',
-  },
-  selectAllText: {
-    color: '#FCA5A5',
-    fontWeight: '700',
-  },
-  closeModalCircle: {
-    backgroundColor: '#1E202B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  confirmDownloadBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.primary,
-  },
-  confirmDownloadBtnDisabled: {
-    opacity: 0.45,
-  },
-  confirmDownloadText: {
-    color: '#FFFFFF',
-    fontWeight: '800',
   },
 });

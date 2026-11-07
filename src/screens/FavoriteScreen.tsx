@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Compass,
   Heart,
-  HeartOff,
   Trash2,
 } from 'lucide-react-native';
 import MovieCard from '../components/MovieCard';
@@ -60,12 +59,12 @@ export default function FavoriteScreen() {
   const handleRemoveOne = useCallback(
     (movie: MovieItem) => {
       showAppAlert(
-        'Bỏ yêu thích',
-        `Bạn có muốn xóa "${movie.name}" khỏi danh sách yêu thích?`,
+        'Bỏ khỏi tủ phim',
+        `Bạn có muốn bỏ "${movie.name}" khỏi tủ phim yêu thích không?`,
         [
-          { text: 'Hủy', style: 'cancel' },
+          { text: 'Giữ lại', style: 'cancel' },
           {
-            text: 'Xóa',
+            text: 'Bỏ yêu thích',
             style: 'destructive',
             onPress: () => removeFavorite(movie.slug),
           },
@@ -77,12 +76,12 @@ export default function FavoriteScreen() {
 
   const handleClearAll = useCallback(() => {
     showAppAlert(
-      'Xóa tất cả',
+      'Dọn tủ phim yêu thích',
       'Bạn có chắc chắn muốn xóa toàn bộ danh sách phim yêu thích không?',
       [
         { text: 'Hủy', style: 'cancel' },
         {
-          text: 'Xóa tất cả',
+          text: 'Xóa hết',
           style: 'destructive',
           onPress: clearFavorites,
         },
@@ -110,11 +109,11 @@ export default function FavoriteScreen() {
           style={[
             styles.quickRemoveBtn,
             {
-              top: rs(8),
-              right: rs(8),
-              width: rs(28),
-              height: rs(28),
-              borderRadius: rs(14),
+              top: rs(12),
+              right: rs(12),
+              width: rs(30),
+              height: rs(30),
+              borderRadius: rs(15),
             },
           ]}
         >
@@ -130,7 +129,7 @@ export default function FavoriteScreen() {
       styles.contentContainer,
       {
         paddingTop: topOffset,
-        paddingBottom: rs(88),
+        paddingBottom: rs(96),
         paddingHorizontal: horizontalPad,
         flexGrow: 1,
       },
@@ -168,15 +167,15 @@ export default function FavoriteScreen() {
           <View style={[styles.headerContainer, { marginBottom: rs(16) }]}>
             <View style={styles.headerLeft}>
               <Text style={[styles.headerTitle, { fontSize: rs(19) }]}>
-                Phim yêu thích
+                Tủ phim yêu thích
               </Text>
               {favorites.length > 0 ? (
                 <View
                   style={[
                     styles.countBadge,
                     {
-                      paddingHorizontal: rs(8),
-                      paddingVertical: rs(2),
+                      paddingHorizontal: rs(9),
+                      paddingVertical: rs(2.5),
                       borderRadius: rs(12),
                     },
                   ]}
@@ -195,16 +194,16 @@ export default function FavoriteScreen() {
                 style={[
                   styles.clearAllBtn,
                   {
-                    paddingHorizontal: rs(10),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(8),
+                    paddingHorizontal: rs(11),
+                    paddingVertical: rs(6.5),
+                    borderRadius: rs(14),
                     gap: rs(4),
                   },
                 ]}
               >
-                <Trash2 color="#EF4444" size={rs(14)} />
+                <Trash2 color={COLORS.danger} size={rs(14)} />
                 <Text style={[styles.clearAllText, { fontSize: rs(12) }]}>
-                  Xóa tất cả
+                  Xóa hết
                 </Text>
               </Pressable>
             ) : null}
@@ -215,50 +214,53 @@ export default function FavoriteScreen() {
             style={[
               styles.emptyContainer,
               {
-                paddingVertical: rs(60),
+                paddingVertical: rs(52),
                 paddingHorizontal: rs(24),
-                gap: rs(14),
+                gap: rs(12),
               },
             ]}
           >
             <View
               style={[
-                styles.emptyIconCircle,
+                styles.emptyStickerCircle,
                 {
-                  width: rs(80),
-                  height: rs(80),
-                  borderRadius: rs(40),
+                  paddingHorizontal: rs(20),
+                  paddingVertical: rs(14),
+                  borderRadius: rs(28),
                 },
               ]}
             >
-              <HeartOff color={COLORS.primary} size={rs(38)} />
+              <Text style={[styles.kaomojiText, { fontSize: rs(24) }]}>
+                (｡♥‿♥｡)
+              </Text>
             </View>
 
             <Text style={[styles.emptyTitle, { fontSize: rs(18) }]}>
-              Chưa có phim yêu thích
+              Tủ phim yêu thích còn trống
             </Text>
 
             <Text style={[styles.emptySubtitle, { fontSize: rs(13) }]}>
-              Hãy khám phá kho phim phong phú và nhấn biểu tượng trái tim để lưu lại
-              những bộ phim bạn yêu thích nhé!
+              Hãy dạo quanh kho phim và thả tim cho những bộ phim làm bạn rung
+              động để lưu vào đây nhé!
             </Text>
 
             <Pressable
               onPress={handleGoExplore}
-              style={[
+              style={({ pressed }) => [
                 styles.exploreBtn,
                 {
                   marginTop: rs(8),
-                  height: rs(44),
+                  height: rs(46),
                   paddingHorizontal: rs(22),
-                  borderRadius: rs(22),
+                  borderRadius: rs(23),
                   gap: rs(8),
+                  transform: [{ translateY: pressed ? 2 : 0 }],
                 },
               ]}
             >
               <Compass color="#FFFFFF" size={rs(18)} />
               <Text style={[styles.exploreBtnText, { fontSize: rs(14) }]}>
-                Khám phá ngay
+                Đi dạo kho phim ngay
               </Text>
             </Pressable>
           </View>
@@ -271,11 +273,9 @@ export default function FavoriteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
-  contentContainer: {
-    // will be supplemented inline
-  },
+  contentContainer: {},
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -287,41 +287,43 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   headerTitle: {
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
+    fontWeight: '900',
+    color: COLORS.ink,
+    letterSpacing: -0.2,
   },
   countBadge: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   countBadgeText: {
-    color: '#FF6B6B',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   clearAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: COLORS.dangerSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   clearAllText: {
-    color: '#EF4444',
-    fontWeight: '600',
+    color: COLORS.danger,
+    fontWeight: '800',
   },
   quickRemoveBtn: {
     position: 'absolute',
-    backgroundColor: 'rgba(15, 17, 23, 0.85)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
     elevation: 4,
-    shadowColor: '#000000',
+    shadowColor: '#F4A2B8',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
   emptyContainer: {
     flex: 1,
@@ -331,21 +333,28 @@ const styles = StyleSheet.create({
   itemWrapper: {
     position: 'relative',
   },
-  emptyIconCircle: {
-    backgroundColor: 'rgba(239, 68, 68, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+  emptyStickerCircle: {
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  kaomojiText: {
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   emptyTitle: {
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: COLORS.ink,
     textAlign: 'center',
   },
   emptySubtitle: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 320,
@@ -354,14 +363,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.primary,
-    elevation: 3,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.primaryDark,
   },
   exploreBtnText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

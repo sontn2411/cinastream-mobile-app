@@ -341,7 +341,7 @@ function VideoPlayer({
             {/* Bottom bar */}
             {error ? (
               <Text style={[styles.errorText, { fontSize: rs(12), paddingBottom: rs(12) }]}>
-                Không phát được tập này. Bấm để thử lại hoặc chọn server khác.
+                (｡•́︿•̀｡) Không phát được tập này rồi. Bấm để thử lại hoặc đổi nguồn phát nhé!
               </Text>
             ) : started ? (
               <View
@@ -395,10 +395,10 @@ export default memo(VideoPlayer);
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.playerBg,
   },
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(28, 17, 22, 0.42)',
   },
   inner: {
     flex: 1,
@@ -415,22 +415,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconCircle: {
-    backgroundColor: 'rgba(18, 19, 26, 0.72)',
+    backgroundColor: 'rgba(74, 46, 53, 0.72)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.35)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     flex: 1,
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   seekCircle: {
-    backgroundColor: 'rgba(18, 19, 26, 0.65)',
+    backgroundColor: 'rgba(74, 46, 53, 0.68)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   mainBtn: {
     backgroundColor: COLORS.primary,
+    borderWidth: 2.5,
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -438,8 +444,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   time: {
-    color: '#E5E7EB',
-    fontWeight: '600',
+    color: '#FFF8F6',
+    fontWeight: '700',
   },
   seekWrap: {
     flex: 1,
@@ -447,17 +453,17 @@ const styles = StyleSheet.create({
   },
   seekTrack: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.28)',
-    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.35)',
+    borderRadius: 6,
     overflow: 'hidden',
   },
   seekFill: {
     backgroundColor: COLORS.primary,
-    borderRadius: 4,
+    borderRadius: 6,
   },
   errorText: {
-    color: '#FCA5A5',
+    color: '#FFE0E9',
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });

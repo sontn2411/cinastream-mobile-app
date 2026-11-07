@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { AlertTriangle, RotateCcw } from 'lucide-react-native';
+import { RotateCcw } from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
 
 interface Props {
@@ -52,14 +52,14 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
-            <View style={styles.iconCircle}>
-              <AlertTriangle color={COLORS.primary} size={42} />
+            <View style={styles.kaomojiCard}>
+              <Text style={styles.kaomoji}>(｡•́︿•̀｡)</Text>
             </View>
 
-            <Text style={styles.title}>Đã xảy ra sự cố</Text>
+            <Text style={styles.title}>Ôi, có chút trục trặc nhỏ rồi</Text>
             <Text style={styles.message}>
-              Ứng dụng gặp lỗi không mong muốn trong quá trình xử lý. Hãy nhấn
-              thử lại để làm mới giao diện.
+              Ứng dụng vừa vấp phải một lỗi bất ngờ. Bạn bấm nút bên dưới để
+              làm mới lại rạp phim nhé!
             </Text>
 
             {__DEV__ && this.state.error?.message ? (
@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<Props, State> {
               accessibilityLabel="Thử lại"
             >
               <RotateCcw color="#FFFFFF" size={18} />
-              <Text style={styles.retryText}>Thử lại</Text>
+              <Text style={styles.retryText}>Làm mới ngay</Text>
             </Pressable>
           </View>
         </SafeAreaView>
@@ -94,7 +94,7 @@ export class ErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F1017',
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -103,42 +103,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     maxWidth: 400,
   },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(239, 68, 68, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+  kaomojiCard: {
+    paddingHorizontal: 22,
+    paddingVertical: 14,
+    borderRadius: 28,
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 5,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
+  },
+  kaomoji: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: COLORS.primary,
   },
   title: {
     fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: COLORS.ink,
     marginBottom: 10,
     textAlign: 'center',
   },
   message: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 24,
   },
   devBox: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
     padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#2F3346',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     marginBottom: 24,
     width: '100%',
   },
   devErrorText: {
-    color: '#F87171',
+    color: COLORS.danger,
     fontSize: 12,
     fontFamily: 'Courier',
   },
@@ -147,22 +155,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.primaryDark,
     paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    paddingHorizontal: 26,
+    borderRadius: 22,
   },
   retryButtonPressed: {
-    opacity: 0.85,
+    transform: [{ translateY: 2 }],
   },
   retryText: {
     color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });
-

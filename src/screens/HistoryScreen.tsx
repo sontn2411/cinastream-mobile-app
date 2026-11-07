@@ -15,7 +15,6 @@ import {
   ChevronLeft,
   Clock,
   Compass,
-  History,
   Play,
   Trash2,
 } from 'lucide-react-native';
@@ -99,10 +98,10 @@ export default function HistoryScreen() {
   const handleRemoveOne = useCallback(
     (item: HistoryItem) => {
       showAppAlert(
-        'Xóa lịch sử',
-        `Bạn có muốn xóa "${item.movie.name}" khỏi lịch sử xem không?`,
+        'Xóa lịch sử xem',
+        `Bạn có muốn xóa "${item.movie.name}" khỏi nhật ký xem phim không?`,
         [
-          { text: 'Hủy', style: 'cancel' },
+          { text: 'Giữ lại', style: 'cancel' },
           {
             text: 'Xóa',
             style: 'destructive',
@@ -116,12 +115,12 @@ export default function HistoryScreen() {
 
   const handleClearAll = useCallback(() => {
     showAppAlert(
-      'Xóa tất cả lịch sử',
+      'Xóa toàn bộ nhật ký',
       'Bạn có chắc chắn muốn xóa toàn bộ lịch sử xem phim không?',
       [
         { text: 'Hủy', style: 'cancel' },
         {
-          text: 'Xóa tất cả',
+          text: 'Xóa hết',
           style: 'destructive',
           onPress: clearHistory,
         },
@@ -148,7 +147,7 @@ export default function HistoryScreen() {
           : 0;
 
       const thumbWidth = rs(116);
-      const thumbHeight = rs(74);
+      const thumbHeight = rs(76);
 
       return (
         <Pressable
@@ -157,10 +156,10 @@ export default function HistoryScreen() {
             styles.card,
             {
               width: cardWidth,
-              borderRadius: rs(12),
+              borderRadius: rs(18),
               padding: rs(10),
               gap: rs(12),
-              opacity: pressed ? 0.88 : 1,
+              transform: [{ translateY: pressed ? 2 : 0 }],
             },
           ]}
         >
@@ -171,7 +170,7 @@ export default function HistoryScreen() {
               {
                 width: thumbWidth,
                 height: thumbHeight,
-                borderRadius: rs(8),
+                borderRadius: rs(12),
               },
             ]}
           >
@@ -191,9 +190,9 @@ export default function HistoryScreen() {
                 style={[
                   styles.playCircle,
                   {
-                    width: rs(28),
-                    height: rs(28),
-                    borderRadius: rs(14),
+                    width: rs(30),
+                    height: rs(30),
+                    borderRadius: rs(15),
                   },
                 ]}
               >
@@ -206,7 +205,7 @@ export default function HistoryScreen() {
               </View>
             </View>
 
-            {/* Red progress bar at the bottom */}
+            {/* Strawberry progress bar at the bottom */}
             <View style={styles.progressBarTrack}>
               <View
                 style={[
@@ -233,7 +232,7 @@ export default function HistoryScreen() {
                 accessibilityLabel="Xóa mục này khỏi lịch sử"
                 style={styles.deleteBtn}
               >
-                <Trash2 color="#9CA3AF" size={rs(15)} />
+                <Trash2 color={COLORS.danger} size={rs(15)} />
               </Pressable>
             </View>
 
@@ -247,14 +246,14 @@ export default function HistoryScreen() {
             ) : null}
 
             {/* Episode badge & time watched */}
-            <View style={[styles.metaRow, { gap: rs(8), marginTop: rs(4) }]}>
+            <View style={[styles.metaRow, { gap: rs(8), marginTop: rs(5) }]}>
               <View
                 style={[
                   styles.epBadge,
                   {
-                    paddingHorizontal: rs(6),
-                    paddingVertical: rs(2),
-                    borderRadius: rs(4),
+                    paddingHorizontal: rs(8),
+                    paddingVertical: rs(2.5),
+                    borderRadius: rs(8),
                   },
                 ]}
               >
@@ -273,7 +272,7 @@ export default function HistoryScreen() {
 
             {/* Relative updated timestamp */}
             <View style={[styles.relativeTimeRow, { gap: rs(4), marginTop: rs(4) }]}>
-              <Clock color="#6B7280" size={rs(11)} />
+              <Clock color={COLORS.inkMuted} size={rs(11)} />
               <Text style={[styles.relativeTimeText, { fontSize: rs(10) }]}>
                 {formatRelativeTime(item.updatedAt)}
               </Text>
@@ -332,19 +331,19 @@ export default function HistoryScreen() {
           hitSlop={8}
           style={[
             styles.backBtn,
-            { width: rs(36), height: rs(36), borderRadius: rs(18) },
+            { width: rs(38), height: rs(38), borderRadius: rs(19) },
           ]}
           accessibilityRole="button"
           accessibilityLabel="Quay lại"
         >
-          <ChevronLeft color="#FFFFFF" size={rs(22)} />
+          <ChevronLeft color={COLORS.ink} size={rs(22)} />
         </Pressable>
 
         <Text style={[styles.topHeaderTitle, { fontSize: rs(18) }]}>
-          Lịch sử xem
+          Nhật ký xem phim
         </Text>
 
-        <View style={{ width: rs(36) }} />
+        <View style={{ width: rs(38) }} />
       </View>
 
       <FlatList
@@ -366,16 +365,16 @@ export default function HistoryScreen() {
         ListHeaderComponent={
           <View style={[styles.headerContainer, { marginBottom: rs(16) }]}>
             <View style={styles.headerLeft}>
-              <Text style={[styles.headerTitle, { fontSize: rs(19) }]}>
-                Lịch sử xem
+              <Text style={[styles.headerTitle, { fontSize: rs(18) }]}>
+                Phim đang xem dở
               </Text>
               {history.length > 0 ? (
                 <View
                   style={[
                     styles.countBadge,
                     {
-                      paddingHorizontal: rs(8),
-                      paddingVertical: rs(2),
+                      paddingHorizontal: rs(9),
+                      paddingVertical: rs(2.5),
                       borderRadius: rs(12),
                     },
                   ]}
@@ -394,16 +393,16 @@ export default function HistoryScreen() {
                 style={[
                   styles.clearAllBtn,
                   {
-                    paddingHorizontal: rs(10),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(8),
+                    paddingHorizontal: rs(11),
+                    paddingVertical: rs(6.5),
+                    borderRadius: rs(14),
                     gap: rs(4),
                   },
                 ]}
               >
-                <Trash2 color="#EF4444" size={rs(14)} />
+                <Trash2 color={COLORS.danger} size={rs(14)} />
                 <Text style={[styles.clearAllText, { fontSize: rs(12) }]}>
-                  Xóa tất cả
+                  Xóa hết
                 </Text>
               </Pressable>
             ) : null}
@@ -414,50 +413,53 @@ export default function HistoryScreen() {
             style={[
               styles.emptyContainer,
               {
-                paddingVertical: rs(60),
+                paddingVertical: rs(52),
                 paddingHorizontal: rs(24),
-                gap: rs(14),
+                gap: rs(12),
               },
             ]}
           >
             <View
               style={[
-                styles.emptyIconCircle,
+                styles.emptyStickerCircle,
                 {
-                  width: rs(80),
-                  height: rs(80),
-                  borderRadius: rs(40),
+                  paddingHorizontal: rs(20),
+                  paddingVertical: rs(14),
+                  borderRadius: rs(28),
                 },
               ]}
             >
-              <History color={COLORS.primary} size={rs(38)} />
+              <Text style={[styles.kaomojiText, { fontSize: rs(24) }]}>
+                (◕‿◕✿)
+              </Text>
             </View>
 
             <Text style={[styles.emptyTitle, { fontSize: rs(18) }]}>
-              Chưa có lịch sử xem
+              Nhật ký xem phim còn trống
             </Text>
 
             <Text style={[styles.emptySubtitle, { fontSize: rs(13) }]}>
-              Các bộ phim bạn đã xem sẽ được lưu tại đây để bạn có thể xem tiếp
-              bất cứ lúc nào!
+              Những tập phim bạn đã xem sẽ được ghi nhớ từng phút tại đây để
+              bạn xem tiếp bất cứ lúc nào!
             </Text>
 
             <Pressable
               onPress={handleGoExplore}
-              style={[
+              style={({ pressed }) => [
                 styles.exploreBtn,
                 {
                   marginTop: rs(8),
-                  height: rs(44),
+                  height: rs(46),
                   paddingHorizontal: rs(22),
-                  borderRadius: rs(22),
+                  borderRadius: rs(23),
                   gap: rs(8),
+                  transform: [{ translateY: pressed ? 2 : 0 }],
                 },
               ]}
             >
               <Compass color="#FFFFFF" size={rs(18)} />
               <Text style={[styles.exploreBtnText, { fontSize: rs(14) }]}>
-                Khám phá ngay
+                Chọn phim xem ngay
               </Text>
             </Pressable>
           </View>
@@ -470,23 +472,28 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.border,
   },
   backBtn: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   topHeaderTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '900',
   },
   contentContainer: {},
   headerContainer: {
@@ -500,55 +507,63 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   headerTitle: {
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
+    fontWeight: '900',
+    color: COLORS.ink,
+    letterSpacing: -0.2,
   },
   countBadge: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   countBadgeText: {
-    color: '#FF6B6B',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   clearAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: COLORS.dangerSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   clearAllText: {
-    color: '#EF4444',
-    fontWeight: '600',
+    color: COLORS.danger,
+    fontWeight: '800',
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#14151C',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
   },
   thumbWrapper: {
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   thumbImage: {
     width: '100%',
     height: '100%',
   },
   placeholderThumb: {
-    backgroundColor: '#2A2D3A',
+    backgroundColor: COLORS.surface,
   },
   playOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(74, 46, 53, 0.22)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   playCircle: {
-    backgroundColor: 'rgba(255, 0, 0, 0.85)',
+    backgroundColor: COLORS.primary,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -557,8 +572,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 3,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
   },
   progressBarFill: {
     height: '100%',
@@ -575,15 +590,16 @@ const styles = StyleSheet.create({
   },
   movieTitle: {
     flex: 1,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '800',
+    color: COLORS.ink,
     marginRight: 6,
   },
   deleteBtn: {
     padding: 2,
   },
   originName: {
-    color: '#8A8F9E',
+    color: COLORS.inkMuted,
+    fontWeight: '600',
     marginTop: 2,
   },
   metaRow: {
@@ -591,21 +607,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   epBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   epBadgeText: {
-    color: '#E5E7EB',
-    fontWeight: '600',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   timeText: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   relativeTimeRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   relativeTimeText: {
-    color: '#6B7280',
+    color: COLORS.inkMuted,
+    fontWeight: '600',
   },
   emptyContainer: {
     flex: 1,
@@ -615,21 +635,28 @@ const styles = StyleSheet.create({
   playIconOffset: {
     marginLeft: 2,
   },
-  emptyIconCircle: {
-    backgroundColor: 'rgba(239, 68, 68, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+  emptyStickerCircle: {
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  kaomojiText: {
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   emptyTitle: {
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: COLORS.ink,
     textAlign: 'center',
   },
   emptySubtitle: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 320,
@@ -638,14 +665,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.primary,
-    elevation: 3,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.primaryDark,
   },
   exploreBtnText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

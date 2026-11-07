@@ -35,7 +35,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
           <StatusBar
-            barStyle="light-content"
+            barStyle="dark-content"
             translucent
             backgroundColor="transparent"
           />

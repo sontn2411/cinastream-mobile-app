@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Mic, Search, SlidersHorizontal, X } from 'lucide-react-native';
+import { Search, SlidersHorizontal, Sparkles, X } from 'lucide-react-native';
 import FilterSection from '../components/FilterSection';
 import MovieCard from '../components/MovieCard';
 import { COLORS } from '../constants/colors';
@@ -135,7 +135,7 @@ export default function ExploreScreen() {
   const contentContainerStyle = useMemo(
     () => ({
       paddingTop: topOffset,
-      paddingBottom: rs(84),
+      paddingBottom: rs(96),
       paddingHorizontal: horizontalPad,
     }),
     [topOffset, horizontalPad, rs],
@@ -168,26 +168,28 @@ export default function ExploreScreen() {
         maxToRenderPerBatch={8}
         windowSize={5}
         ListHeaderComponent={
-          <View style={{ marginBottom: rs(6) }}>
+          <View style={{ marginBottom: rs(8) }}>
             {/* Search Bar + Filter Button */}
             <View
-              style={[styles.searchRow, { gap: rs(10), marginBottom: rs(12) }]}>
+              style={[styles.searchRow, { gap: rs(10), marginBottom: rs(12) }]}
+            >
               <View
                 style={[
                   styles.searchBox,
                   {
-                    height: rs(44),
-                    borderRadius: rs(12),
-                    paddingHorizontal: rs(12),
+                    height: rs(46),
+                    borderRadius: rs(23),
+                    paddingHorizontal: rs(14),
                     gap: rs(8),
                   },
-                ]}>
-                <Search color="#8A8F9E" size={rs(18)} />
+                ]}
+              >
+                <Search color={COLORS.primary} size={rs(18)} />
                 <TextInput
                   value={searchText}
                   onChangeText={setSearchText}
-                  placeholder="Tìm tên phim..."
-                  placeholderTextColor="#6B7280"
+                  placeholder="Tìm bộ phim yêu thích của bạn..."
+                  placeholderTextColor={COLORS.inkMuted}
                   numberOfLines={1}
                   multiline={false}
                   style={[styles.searchInput, { fontSize: rs(13) }]}
@@ -195,39 +197,44 @@ export default function ExploreScreen() {
                 />
                 {searchText.length > 0 ? (
                   <Pressable onPress={() => setSearchText('')} hitSlop={8}>
-                    <X color="#9CA3AF" size={rs(16)} />
+                    <X color={COLORS.inkSoft} size={rs(16)} />
                   </Pressable>
                 ) : (
-                  <Mic color="#8A8F9E" size={rs(17)} />
+                  <Sparkles color={COLORS.accent} size={rs(16)} />
                 )}
               </View>
 
               <Pressable
                 onPress={() => setShowFilter(prev => !prev)}
-                style={[
+                style={({ pressed }) => [
                   styles.filterBtn,
                   {
-                    width: rs(44),
-                    height: rs(44),
-                    borderRadius: rs(12),
+                    width: rs(46),
+                    height: rs(46),
+                    borderRadius: rs(23),
+                    transform: [{ translateY: pressed ? 2 : 0 }],
                   },
                   showFilter ? styles.filterBtnActive : null,
-                ]}>
+                ]}
+              >
                 {showFilter ? (
                   <X color="#FFFFFF" size={rs(18)} />
                 ) : (
-                  <SlidersHorizontal color="#FFFFFF" size={rs(18)} />
+                  <SlidersHorizontal
+                    color={hasActiveFilter ? COLORS.primary : COLORS.ink}
+                    size={rs(18)}
+                  />
                 )}
                 {hasActiveFilter && !showFilter ? (
                   <View
                     style={[
                       styles.filterDot,
                       {
-                        width: rs(8),
-                        height: rs(8),
-                        borderRadius: rs(4),
-                        top: rs(8),
-                        right: rs(8),
+                        width: rs(9),
+                        height: rs(9),
+                        borderRadius: rs(4.5),
+                        top: rs(7),
+                        right: rs(7),
                       },
                     ]}
                   />
@@ -249,13 +256,33 @@ export default function ExploreScreen() {
         renderItem={renderItem}
         ListEmptyComponent={
           isLoading ? (
-            <View style={[styles.centeredContainer, { paddingVertical: rs(48) }]}>
+            <View style={[styles.centeredContainer, { paddingVertical: rs(48), gap: rs(10) }]}>
               <ActivityIndicator size="large" color={COLORS.primary} />
+              <Text style={[styles.loadingCaption, { fontSize: rs(13) }]}>
+                Đang chuẩn bị bắp rang bơ... (◕‿◕✿)
+              </Text>
             </View>
           ) : (
-            <View style={[styles.centeredContainer, { paddingVertical: rs(48) }]}>
-              <Text style={[styles.emptyText, { fontSize: rs(14) }]}>
-                Không tìm thấy phim phù hợp
+            <View
+              style={[
+                styles.emptyCard,
+                {
+                  marginTop: rs(24),
+                  paddingVertical: rs(36),
+                  paddingHorizontal: rs(20),
+                  borderRadius: rs(24),
+                  gap: rs(8),
+                },
+              ]}
+            >
+              <Text style={[styles.kaomoji, { fontSize: rs(28) }]}>
+                (｡•́︿•̀｡)
+              </Text>
+              <Text style={[styles.emptyTitle, { fontSize: rs(16) }]}>
+                Chưa tìm thấy bộ phim này rồi
+              </Text>
+              <Text style={[styles.emptyText, { fontSize: rs(13) }]}>
+                Bạn thử đổi từ khóa khác hoặc bấm Đặt lại bộ lọc xem sao nhé!
               </Text>
             </View>
           )
@@ -275,7 +302,7 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   searchRow: {
     flexDirection: 'row',
@@ -286,35 +313,64 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.borderStrong,
   },
   searchInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: COLORS.ink,
+    fontWeight: '600',
     paddingVertical: 0,
   },
   filterBtn: {
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
   filterBtnActive: {
-    borderColor: '#2F3346',
-    backgroundColor: '#1C1F2B',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   filterDot: {
     position: 'absolute',
     backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: COLORS.card,
   },
   centeredContainer: {
     alignItems: 'center',
   },
+  loadingCaption: {
+    color: COLORS.inkSoft,
+    fontWeight: '700',
+  },
+  emptyCard: {
+    backgroundColor: COLORS.surface,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+  },
+  kaomoji: {
+    color: COLORS.primary,
+    fontWeight: '800',
+  },
+  emptyTitle: {
+    color: COLORS.ink,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   emptyText: {
-    color: '#8A8F9E',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });

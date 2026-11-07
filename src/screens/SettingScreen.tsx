@@ -7,6 +7,7 @@ import {
   ChevronRight,
   DownloadCloud,
   History,
+  Sparkles,
 } from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -48,25 +49,30 @@ export default function SettingScreen({ navigation }: Props) {
           hitSlop={8}
           style={[
             styles.backBtn,
-            { width: rs(36), height: rs(36), borderRadius: rs(18) },
+            { width: rs(38), height: rs(38), borderRadius: rs(19) },
           ]}
           accessibilityRole="button"
           accessibilityLabel="Quay lại"
         >
-          <ChevronLeft color="#FFFFFF" size={rs(22)} />
+          <ChevronLeft color={COLORS.ink} size={rs(22)} />
         </Pressable>
 
-        <Text style={[styles.headerTitle, { fontSize: rs(18) }]}>Cài đặt</Text>
+        <Text style={[styles.headerTitle, { fontSize: rs(18) }]}>
+          Góc cài đặt
+        </Text>
 
         {/* Placeholder View to keep Title centered */}
-        <View style={{ width: rs(36) }} />
+        <View style={{ width: rs(38) }} />
       </View>
 
       {/* Settings Options */}
       <View style={[styles.content, { padding: rs(16), gap: rs(12) }]}>
-        <Text style={[styles.sectionTitle, { fontSize: rs(13) }]}>
-          TIỆN ÍCH & CÁ NHÂN
-        </Text>
+        <View style={[styles.sectionHeaderRow, { gap: rs(6) }]}>
+          <Sparkles color={COLORS.primary} size={rs(15)} />
+          <Text style={[styles.sectionTitle, { fontSize: rs(14) }]}>
+            Góc riêng của bạn
+          </Text>
+        </View>
 
         {/* Item 1: Lịch sử xem */}
         <Pressable
@@ -76,8 +82,8 @@ export default function SettingScreen({ navigation }: Props) {
             {
               paddingVertical: rs(14),
               paddingHorizontal: rs(14),
-              borderRadius: rs(12),
-              opacity: pressed ? 0.8 : 1,
+              borderRadius: rs(18),
+              transform: [{ translateY: pressed ? 2 : 0 }],
             },
           ]}
           accessibilityRole="button"
@@ -88,14 +94,14 @@ export default function SettingScreen({ navigation }: Props) {
               style={[
                 styles.menuIconContainer,
                 styles.historyIconContainer,
-                { width: rs(38), height: rs(38), borderRadius: rs(10) },
+                { width: rs(42), height: rs(42), borderRadius: rs(14) },
               ]}
             >
               <History color={COLORS.primary} size={rs(20)} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={[styles.menuItemTitle, { fontSize: rs(15) }]}>
-                Lịch sử xem
+                Nhật ký xem phim
               </Text>
               <Text
                 style={[
@@ -103,11 +109,11 @@ export default function SettingScreen({ navigation }: Props) {
                   { fontSize: rs(12), marginTop: rs(2) },
                 ]}
               >
-                Danh sách các bộ đang xem dở
+                Xem tiếp các tập phim bạn đang thưởng thức dở
               </Text>
             </View>
           </View>
-          <ChevronRight color="#8A8F9E" size={rs(18)} />
+          <ChevronRight color={COLORS.inkMuted} size={rs(18)} />
         </Pressable>
 
         {/* Item 2: Tải Video Facebook */}
@@ -118,8 +124,8 @@ export default function SettingScreen({ navigation }: Props) {
             {
               paddingVertical: rs(14),
               paddingHorizontal: rs(14),
-              borderRadius: rs(12),
-              opacity: pressed ? 0.8 : 1,
+              borderRadius: rs(18),
+              transform: [{ translateY: pressed ? 2 : 0 }],
             },
           ]}
           accessibilityRole="button"
@@ -129,14 +135,14 @@ export default function SettingScreen({ navigation }: Props) {
             <View
               style={[
                 styles.menuIconContainer,
-                { width: rs(38), height: rs(38), borderRadius: rs(10) },
+                { width: rs(42), height: rs(42), borderRadius: rs(14) },
               ]}
             >
-              <DownloadCloud color="#1877F2" size={rs(20)} />
+              <DownloadCloud color={COLORS.secondaryDark} size={rs(20)} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={[styles.menuItemTitle, { fontSize: rs(15) }]}>
-                Tải Video Facebook
+                Tải video Facebook
               </Text>
               <Text
                 style={[
@@ -144,11 +150,11 @@ export default function SettingScreen({ navigation }: Props) {
                   { fontSize: rs(12), marginTop: rs(2) },
                 ]}
               >
-                Công cụ tải clip & reel từ Facebook
+                Lưu nhanh clip & thước phim Reels về máy
               </Text>
             </View>
           </View>
-          <ChevronRight color="#8A8F9E" size={rs(18)} />
+          <ChevronRight color={COLORS.inkMuted} size={rs(18)} />
         </Pressable>
       </View>
     </View>
@@ -158,39 +164,49 @@ export default function SettingScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.border,
   },
   backBtn: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '900',
   },
   content: {
     flex: 1,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   sectionTitle: {
-    color: '#8A8F9E',
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -199,18 +215,22 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   menuIconContainer: {
-    backgroundColor: 'rgba(24, 119, 242, 0.12)',
+    backgroundColor: COLORS.secondarySoft,
+    borderWidth: 1.5,
+    borderColor: '#A9EFE6',
     justifyContent: 'center',
     alignItems: 'center',
   },
   historyIconContainer: {
-    backgroundColor: 'rgba(229, 9, 20, 0.14)',
+    backgroundColor: COLORS.primarySoft,
+    borderColor: COLORS.border,
   },
   menuItemTitle: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   menuItemSubtitle: {
-    color: '#8A8F9E',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
   },
 });

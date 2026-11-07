@@ -160,7 +160,7 @@ export default function LocalVideoPlayerScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.playerBg,
   },
   topBar: {
     position: 'absolute',
@@ -169,16 +169,16 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   backBtn: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(74, 46, 53, 0.72)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.35)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
     flex: 1,
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
     textShadowColor: 'rgba(0, 0, 0, 0.85)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
@@ -189,16 +189,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
+    color: '#FFE0E9',
+    fontWeight: '700',
   },
   errorTitle: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
     textAlign: 'center',
   },
   errorSubtitle: {
-    color: '#9CA3AF',
+    color: '#F7C8D4',
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

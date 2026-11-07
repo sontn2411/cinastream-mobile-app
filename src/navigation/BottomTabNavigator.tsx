@@ -10,6 +10,7 @@ import {
   Download,
   DownloadCloud,
   Settings,
+  Sparkles,
 } from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
 import ExploreScreen from '../screens/ExploreScreen';
@@ -30,48 +31,73 @@ export type BottomTabParamList = {
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-// shortcut: Android New Architecture conflicts with @react-native-community/blur root DecorView canvas causing full-screen white overlay; use BlurView on iOS and translucent dark glass View on Android
-function GlassBlurBackground() {
+function HeaderGlassBackground() {
   if (Platform.OS === 'ios') {
     return (
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <BlurView
           style={StyleSheet.absoluteFill}
-          blurType="dark"
-          blurAmount={20}
-          reducedTransparencyFallbackColor="#12131A"
+          blurType="light"
+          blurAmount={18}
+          reducedTransparencyFallbackColor={COLORS.background}
         />
-        <View style={styles.iosGlassOverlay} />
+        <View style={styles.iosHeaderOverlay} />
       </View>
     );
   }
 
-  return <View pointerEvents="none" style={styles.androidGlass} />;
+  return <View pointerEvents="none" style={styles.androidHeaderGlass} />;
+}
+
+function TabPillBackground() {
+  const { rs } = useResponsive();
+  return (
+    <View
+      pointerEvents="none"
+      style={[
+        StyleSheet.absoluteFill,
+        styles.tabPillSurface,
+        { borderRadius: rs(28) },
+      ]}
+    />
+  );
 }
 
 function HeaderBrand() {
   const { rs } = useResponsive();
 
   return (
-    <View style={[styles.headerBrand, { paddingLeft: rs(16), gap: rs(8) }]}>
-      <Image
-        source={require('../assets/logo-cinastream.png')}
-        style={{ width: rs(32), height: rs(22) }}
-        resizeMode="contain"
-      />
+    <View style={[styles.headerBrand, { paddingLeft: rs(14), gap: rs(8) }]}>
+      <View
+        style={[
+          styles.logoBadge,
+          {
+            paddingHorizontal: rs(7),
+            paddingVertical: rs(4),
+            borderRadius: rs(12),
+          },
+        ]}
+      >
+        <Image
+          source={require('../assets/logo-cinastream.png')}
+          style={{ width: rs(26), height: rs(18) }}
+          resizeMode="contain"
+        />
+      </View>
       <Text
         style={[
           styles.brandTitle,
           {
-            fontSize: rs(18),
-            lineHeight: rs(22),
-            letterSpacing: rs(1),
+            fontSize: rs(19),
+            lineHeight: rs(23),
+            letterSpacing: rs(0.5),
           },
         ]}
       >
-        <Text style={styles.cina}>CINA</Text>
-        <Text style={styles.stream}>STREAM</Text>
+        <Text style={styles.cina}>Cina</Text>
+        <Text style={styles.stream}>Stream</Text>
       </Text>
+      <Sparkles color={COLORS.accent} fill={COLORS.accent} size={rs(14)} />
     </View>
   );
 }
@@ -84,26 +110,27 @@ function HeaderRightSetting() {
     <Pressable
       onPress={() => navigation.navigate('Setting')}
       hitSlop={8}
-      style={[
+      style={({ pressed }) => [
         styles.headerSettingBtn,
         {
-          marginRight: rs(16),
-          width: rs(36),
-          height: rs(36),
-          borderRadius: rs(18),
+          marginRight: rs(14),
+          width: rs(38),
+          height: rs(38),
+          borderRadius: rs(19),
+          transform: [{ translateY: pressed ? 2 : 0 }],
         },
       ]}
       accessibilityRole="button"
       accessibilityLabel="Cài đặt"
     >
-      <Settings color="#D1D5DB" size={rs(20)} />
+      <Settings color={COLORS.ink} size={rs(19)} />
     </Pressable>
   );
 }
 
 export default function BottomTabNavigator() {
   const { rs } = useResponsive();
-  const iconSize = rs(22);
+  const iconSize = rs(21);
   const activeMovieDownloads = useDownloadStore(
     state =>
       state.downloads.filter(
@@ -121,7 +148,13 @@ export default function BottomTabNavigator() {
   );
 
   const renderFavoriteIcon = useCallback(
-    ({ color }: { color: string }) => <Heart color={color} size={iconSize} />,
+    ({ color, focused }: { color: string; focused: boolean }) => (
+      <Heart
+        color={color}
+        fill={focused ? COLORS.primarySoft : 'none'}
+        size={iconSize}
+      />
+    ),
     [iconSize],
   );
 
@@ -145,23 +178,32 @@ export default function BottomTabNavigator() {
         headerTitle: '',
         headerLeft: HeaderBrand,
         headerRight: HeaderRightSetting,
-        headerBackground: GlassBlurBackground,
+        headerBackground: HeaderGlassBackground,
         headerStyle: styles.header,
         tabBarStyle: [
           styles.tabBar,
           {
-            height: rs(60),
+            height: rs(64),
+            left: rs(14),
+            right: rs(14),
+            bottom: rs(12),
+            borderRadius: rs(28),
             paddingTop: rs(6),
             paddingBottom: rs(8),
             paddingHorizontal: rs(8),
           },
         ],
-        tabBarLabelStyle: {
-          fontSize: rs(12),
+        tabBarItemStyle: {
+          borderRadius: rs(20),
+          marginHorizontal: rs(2),
         },
-        tabBarBackground: GlassBlurBackground,
+        tabBarLabelStyle: {
+          fontSize: rs(11.5),
+          fontWeight: '800',
+        },
+        tabBarBackground: TabPillBackground,
         tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.secondary,
+        tabBarInactiveTintColor: COLORS.inkMuted,
       }}
     >
       <Tab.Screen
@@ -176,7 +218,7 @@ export default function BottomTabNavigator() {
         name="Favorite"
         component={FavoriteScreen}
         options={{
-          tabBarLabel: 'Yêu thích',
+          tabBarLabel: 'Tủ phim',
           tabBarIcon: renderFavoriteIcon,
         }}
       />
@@ -192,7 +234,7 @@ export default function BottomTabNavigator() {
             backgroundColor: COLORS.primary,
             color: '#FFFFFF',
             fontSize: rs(10),
-            fontWeight: '700',
+            fontWeight: '800',
           },
         }}
       />
@@ -211,28 +253,36 @@ export default function BottomTabNavigator() {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: 'transparent',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 14,
-    elevation: 14,
-    boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.75)',
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.border,
+    shadowColor: '#F4A2B8',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 6,
   },
   headerBrand: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  logoBadge: {
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.borderStrong,
+  },
   headerSettingBtn: {
-    backgroundColor: '#1E202B',
-    borderWidth: 1,
-    borderColor: '#2F3346',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   brandTitle: {
-    fontWeight: 'bold',
+    fontWeight: '900',
     includeFontPadding: false,
     textAlignVertical: 'center',
   },
@@ -240,26 +290,31 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   stream: {
-    color: '#FFFFFF',
+    color: COLORS.ink,
   },
   tabBar: {
     position: 'absolute',
     backgroundColor: 'transparent',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -6 },
-    shadowOpacity: 0.6,
+    borderTopWidth: 0,
+    elevation: 10,
+    shadowColor: '#E8839B',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
     shadowRadius: 14,
-    elevation: 14,
-    boxShadow: '0px -6px 20px rgba(0, 0, 0, 0.75)',
   },
-  iosGlassOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(14, 15, 20, 0.45)',
+  tabPillSurface: {
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
-  androidGlass: {
+  iosHeaderOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(18, 19, 26, 0.92)',
+    backgroundColor: 'rgba(255, 248, 246, 0.82)',
+  },
+  androidHeaderGlass: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 248, 246, 0.96)',
   },
 });

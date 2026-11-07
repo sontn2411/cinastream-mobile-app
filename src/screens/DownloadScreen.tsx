@@ -413,9 +413,9 @@ export default function DownloadScreen() {
               ]}
             >
               {isCollapsed ? (
-                <ChevronDown color="#D1D5DB" size={rs(18)} />
+                <ChevronDown color={COLORS.ink} size={rs(18)} />
               ) : (
-                <ChevronUp color="#D1D5DB" size={rs(18)} />
+                <ChevronUp color={COLORS.ink} size={rs(18)} />
               )}
             </Pressable>
           </Pressable>
@@ -771,16 +771,16 @@ export default function DownloadScreen() {
             </View>
 
             {/* Tabs Switch: Phim & Facebook */}
-            <View style={[styles.tabSegmentContainer, { borderRadius: rs(10), padding: rs(3) }]}>
+            <View style={[styles.tabSegmentContainer, { borderRadius: rs(18), padding: rs(4) }]}>
               <Pressable
                 onPress={() => setActiveTab('movie')}
                 style={[
                   styles.tabSegmentBtn,
-                  { paddingVertical: rs(7), borderRadius: rs(8), gap: rs(6) },
+                  { paddingVertical: rs(8), borderRadius: rs(14), gap: rs(6) },
                   isMovieTab && styles.tabSegmentBtnActive,
                 ]}
               >
-                <Film color={isMovieTab ? '#FFFFFF' : '#8A8F9E'} size={rs(15)} />
+                <Film color={isMovieTab ? '#FFFFFF' : COLORS.inkSoft} size={rs(15)} />
                 <Text style={[styles.tabSegmentText, isMovieTab && styles.tabSegmentTextActive, { fontSize: rs(13) }]}>
                   Phim ({downloads.length})
                 </Text>
@@ -790,11 +790,11 @@ export default function DownloadScreen() {
                 onPress={() => setActiveTab('facebook')}
                 style={[
                   styles.tabSegmentBtn,
-                  { paddingVertical: rs(7), borderRadius: rs(8), gap: rs(6) },
+                  { paddingVertical: rs(8), borderRadius: rs(14), gap: rs(6) },
                   !isMovieTab && styles.tabSegmentBtnActive,
                 ]}
               >
-                <DownloadCloud color={!isMovieTab ? '#FFFFFF' : '#8A8F9E'} size={rs(15)} />
+                <DownloadCloud color={!isMovieTab ? '#FFFFFF' : COLORS.inkSoft} size={rs(15)} />
                 <Text style={[styles.tabSegmentText, !isMovieTab && styles.tabSegmentTextActive, { fontSize: rs(13) }]}>
                   Facebook ({validFbDownloads.length})
                 </Text>
@@ -918,7 +918,7 @@ export default function DownloadScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -931,32 +931,36 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   headerTitle: {
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
+    fontWeight: '900',
+    color: COLORS.ink,
+    letterSpacing: -0.2,
   },
   countBadge: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   countBadgeText: {
-    color: '#FF6B6B',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   clearAllBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: COLORS.dangerSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   clearAllText: {
-    color: '#EF4444',
-    fontWeight: '600',
+    color: COLORS.danger,
+    fontWeight: '800',
   },
   movieCard: {
-    backgroundColor: '#13141C',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   movieHeaderRow: {
     flexDirection: 'row',
@@ -965,20 +969,22 @@ const styles = StyleSheet.create({
   posterWrapper: {
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   posterImage: {
     width: '100%',
     height: '100%',
   },
   posterPlaceholder: {
-    backgroundColor: '#252836',
+    backgroundColor: COLORS.surface,
   },
   posterEpBadge: {
     position: 'absolute',
-    backgroundColor: 'rgba(11, 12, 16, 0.88)',
+    backgroundColor: COLORS.primary,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: '#FFFFFF',
   },
   posterEpBadgeText: {
     color: '#FFFFFF',
@@ -989,7 +995,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   movieTitle: {
-    color: '#FFFFFF',
+    color: COLORS.ink,
     fontWeight: '800',
   },
   badgeRow: {
@@ -998,89 +1004,100 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   vietsubPill: {
-    backgroundColor: 'rgba(220, 38, 38, 0.22)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   vietsubPillText: {
-    color: '#FCA5A5',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   thuyetMinhPill: {
-    backgroundColor: 'rgba(217, 119, 6, 0.22)',
+    backgroundColor: COLORS.secondarySoft,
+    borderWidth: 1,
+    borderColor: '#A9EFE6',
   },
   thuyetMinhPillText: {
-    color: '#FCD34D',
-    fontWeight: '700',
+    color: COLORS.secondaryDark,
+    fontWeight: '800',
   },
   qualityText: {
-    color: '#9CA3AF',
-    fontWeight: '700',
+    color: COLORS.inkSoft,
+    fontWeight: '800',
   },
   summaryMetaText: {
-    color: '#9CA3AF',
-    fontWeight: '500',
+    color: COLORS.inkMuted,
+    fontWeight: '600',
   },
   chevronCircle: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   episodeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#181A24',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   epNumBox: {
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
   },
   epNumBoxActive: {
-    backgroundColor: 'rgba(220, 38, 38, 0.24)',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
   },
   epNumBoxDefault: {
-    backgroundColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.border,
   },
   epNumText: {
     fontWeight: '800',
   },
   epNumTextActive: {
-    color: '#FCA5A5',
+    color: '#FFFFFF',
   },
   epNumTextDefault: {
-    color: '#D1D5DB',
+    color: COLORS.ink,
   },
   epInfoCol: {
     flex: 1,
     justifyContent: 'center',
   },
   epTitleText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   epSubMetaText: {
-    color: '#9CA3AF',
-    fontWeight: '500',
+    color: COLORS.inkSoft,
+    fontWeight: '600',
   },
   epDownloadingText: {
-    color: '#60A5FA',
-    fontWeight: '600',
+    color: COLORS.primary,
+    fontWeight: '700',
   },
   epPausedText: {
-    color: '#FBBF24',
-    fontWeight: '600',
+    color: COLORS.warning,
+    fontWeight: '700',
   },
   epQueuedText: {
-    color: '#9CA3AF',
+    color: COLORS.inkMuted,
     fontWeight: '600',
   },
   epFailedText: {
-    color: '#F87171',
-    fontWeight: '600',
+    color: COLORS.danger,
+    fontWeight: '700',
   },
   epProgressTrack: {
-    height: 3,
+    height: 5,
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.14)',
-    borderRadius: 2,
+    backgroundColor: COLORS.card,
+    borderRadius: 3,
     overflow: 'hidden',
   },
   epProgressFill: {
@@ -1089,7 +1106,7 @@ const styles = StyleSheet.create({
   },
   epProgressFillPaused: {
     height: '100%',
-    backgroundColor: '#FBBF24',
+    backgroundColor: COLORS.warning,
   },
   epActionBtns: {
     flexDirection: 'row',
@@ -1097,11 +1114,17 @@ const styles = StyleSheet.create({
   },
   playCircleBtn: {
     backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.primaryDark,
     alignItems: 'center',
     justifyContent: 'center',
   },
   deleteCircleBtn: {
-    backgroundColor: '#252836',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1111,20 +1134,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyIconCircle: {
-    backgroundColor: 'rgba(239, 68, 68, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   emptyTitle: {
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: COLORS.ink,
     textAlign: 'center',
   },
   emptySubtitle: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
     textAlign: 'center',
     lineHeight: 20,
     maxWidth: 320,
@@ -1136,21 +1162,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.primary,
-    elevation: 3,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.primaryDark,
   },
   exploreBtnText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   tabSegmentContainer: {
     flexDirection: 'row',
-    backgroundColor: '#161822',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.borderStrong,
   },
   tabSegmentBtn: {
     flex: 1,
@@ -1159,21 +1186,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabSegmentBtnActive: {
-    backgroundColor: '#262A3B',
+    backgroundColor: COLORS.primary,
   },
   tabSegmentText: {
-    color: '#8A8F9E',
-    fontWeight: '600',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   tabSegmentTextActive: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   fbEmptyIconCircle: {
-    backgroundColor: 'rgba(24, 119, 242, 0.08)',
-    borderColor: 'rgba(24, 119, 242, 0.25)',
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.border,
   },
   fbExploreBtn: {
-    backgroundColor: '#1877F2',
+    backgroundColor: COLORS.primary,
   },
 });

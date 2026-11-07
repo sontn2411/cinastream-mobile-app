@@ -48,9 +48,9 @@ export const FacebookDownloadCard = memo(function CardComponent({
       style={({ pressed }) => [
         styles.fbCard,
         {
-          borderRadius: rs(14),
+          borderRadius: rs(18),
           padding: rs(14),
-          opacity: pressed && !isDownloading ? 0.85 : 1,
+          transform: [{ translateY: pressed && !isDownloading ? 2 : 0 }],
         },
       ]}
     >
@@ -60,15 +60,15 @@ export const FacebookDownloadCard = memo(function CardComponent({
             styles.fbIconBox,
             isDone && styles.fbIconBoxDone,
             isFailed && styles.fbIconBoxFailed,
-            { width: rs(44), height: rs(44), borderRadius: rs(12) },
+            { width: rs(44), height: rs(44), borderRadius: rs(14) },
           ]}
         >
           {isDone ? (
-            <Play color="#10B981" fill="#10B981" size={rs(20)} />
+            <Play color={COLORS.success} fill={COLORS.success} size={rs(20)} />
           ) : isFailed ? (
-            <RotateCw color="#EF4444" size={rs(20)} />
+            <RotateCw color={COLORS.danger} size={rs(20)} />
           ) : (
-            <DownloadCloud color="#1877F2" size={rs(22)} />
+            <DownloadCloud color={COLORS.primary} size={rs(22)} />
           )}
         </View>
         <View style={styles.fbTextContainer}>
@@ -83,9 +83,9 @@ export const FacebookDownloadCard = memo(function CardComponent({
             ]}
           >
             {isDone
-              ? `Đã tải • ${formatBytes(item.fileSize)} • Nhấn để phát`
+              ? `Đã tải xong • ${formatBytes(item.fileSize)} • Bấm để xem`
               : isFailed
-              ? `Lỗi: ${item.errorMessage || 'Không thể tải'} (Nhấn để thử lại)`
+              ? `Lỗi: ${item.errorMessage || 'Không thể tải'} (Bấm để thử lại)`
               : `Đang tải: ${item.progress}% (${formatBytes(item.downloadedBytes)} / ${
                   item.totalBytes > 0 ? formatBytes(item.totalBytes) : '--'
                 })`}
@@ -95,13 +95,13 @@ export const FacebookDownloadCard = memo(function CardComponent({
             <View
               style={[
                 styles.progressTrack,
-                { height: rs(4), borderRadius: rs(2), marginTop: rs(8) },
+                { height: rs(6), borderRadius: rs(3), marginTop: rs(8) },
               ]}
             >
               <View
                 style={[
                   styles.progressFill,
-                  { width: `${item.progress}%`, borderRadius: rs(2) },
+                  { width: `${item.progress}%`, borderRadius: rs(3) },
                 ]}
               />
             </View>
@@ -114,12 +114,12 @@ export const FacebookDownloadCard = memo(function CardComponent({
         hitSlop={8}
         style={[
           styles.deleteCircleBtn,
-          { width: rs(34), height: rs(34), borderRadius: rs(17), marginLeft: rs(8) },
+          { width: rs(36), height: rs(36), borderRadius: rs(18), marginLeft: rs(8) },
         ]}
         accessibilityRole="button"
         accessibilityLabel={`Xóa video ${item.fileName}`}
       >
-        <Trash2 color="#EF4444" size={rs(16)} />
+        <Trash2 color={COLORS.danger} size={rs(16)} />
       </Pressable>
     </Pressable>
   );
@@ -130,9 +130,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   fbCardLeft: {
     flex: 1,
@@ -140,32 +142,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fbIconBox: {
-    backgroundColor: 'rgba(24, 119, 242, 0.14)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   fbIconBoxDone: {
-    backgroundColor: 'rgba(16, 185, 129, 0.14)',
+    backgroundColor: COLORS.successSoft,
+    borderColor: '#A9EFE6',
   },
   fbIconBoxFailed: {
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
+    backgroundColor: COLORS.dangerSoft,
+    borderColor: COLORS.border,
   },
   fbTextContainer: {
     flex: 1,
   },
   fbTitle: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   fbSubtitle: {
-    color: '#8A8F9E',
+    color: COLORS.inkSoft,
+    fontWeight: '600',
   },
   fbSubtitleFailed: {
-    color: '#F87171',
+    color: COLORS.danger,
   },
   progressTrack: {
     width: '100%',
-    backgroundColor: '#252836',
+    backgroundColor: COLORS.surface,
     overflow: 'hidden',
   },
   progressFill: {
@@ -173,7 +180,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   deleteCircleBtn: {
-    backgroundColor: '#252836',
+    backgroundColor: COLORS.dangerSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },

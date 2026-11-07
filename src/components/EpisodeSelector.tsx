@@ -41,13 +41,13 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
   }
 
   return (
-    <View style={{ gap: rs(12) }}>
+    <View style={{ gap: rs(14) }}>
       {/* Server Tabs */}
       <View style={{ gap: rs(8) }}>
         <View style={[styles.sectionHeaderRow, { gap: rs(6) }]}>
           <Server color={COLORS.primary} size={rs(15)} />
           <Text style={[styles.sectionTitle, { fontSize: rs(14) }]}>
-            Chọn Server
+            Chọn nguồn phát
           </Text>
         </View>
 
@@ -66,7 +66,7 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
                 style={[
                   styles.serverPill,
                   {
-                    paddingHorizontal: rs(14),
+                    paddingHorizontal: rs(15),
                     paddingVertical: rs(8),
                     borderRadius: rs(20),
                   },
@@ -107,12 +107,13 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
                 <Pressable
                   key={`${ep.slug}-${epIndex}`}
                   onPress={() => onSelectEpisode(epIndex)}
-                  style={[
+                  style={({ pressed }) => [
                     styles.episodeBox,
                     {
                       width: epWidth,
                       paddingVertical: rs(10),
-                      borderRadius: rs(8),
+                      borderRadius: rs(12),
+                      transform: [{ translateY: pressed ? 1.5 : 0 }],
                     },
                     active ? styles.episodeBoxActive : null,
                   ]}
@@ -128,7 +129,12 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
                     {ep.name}
                   </Text>
                   {dlItem?.status === 'completed' ? (
-                    <View style={styles.epDownloadedDot} />
+                    <View
+                      style={[
+                        styles.epDownloadedDot,
+                        active ? styles.epDownloadedDotActive : null,
+                      ]}
+                    />
                   ) : null}
                 </Pressable>
               );
@@ -146,37 +152,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   serverList: {
     paddingVertical: 2,
   },
   serverPill: {
-    backgroundColor: '#1E202B',
-    borderWidth: 1,
-    borderColor: '#2F3346',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   serverPillActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   serverPillText: {
-    color: '#9CA3AF',
-    fontWeight: '600',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   serverPillTextActive: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   episodeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   episodeBox: {
-    backgroundColor: '#1E202B',
-    borderWidth: 1,
-    borderColor: '#2F3346',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -184,21 +195,26 @@ const styles = StyleSheet.create({
   episodeBoxActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   episodeText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '700',
   },
   episodeTextActive: {
-    fontWeight: '700',
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   epDownloadedDot: {
     position: 'absolute',
     top: 5,
     right: 5,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#10B981',
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: COLORS.success,
+  },
+  epDownloadedDotActive: {
+    backgroundColor: '#FFFFFF',
   },
 });

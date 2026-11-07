@@ -283,20 +283,20 @@ export default function FacebookDownloadScreen() {
               { fontSize: rs(13), marginBottom: rs(8) },
             ]}
           >
-            ĐƯỜNG DẪN VIDEO FACEBOOK
+            Đường dẫn video hoặc Reels Facebook
           </Text>
 
           <View
             style={[
               styles.inputWrapper,
-              { borderRadius: rs(12), minHeight: rs(48) },
+              { borderRadius: rs(18), minHeight: rs(50) },
             ]}
           >
             <TextInput
               value={inputUrl}
               onChangeText={setSessionInputUrl}
               placeholder="https://www.facebook.com/reel/..."
-              placeholderTextColor="#6B7280"
+              placeholderTextColor={COLORS.inkMuted}
               style={[styles.textInput, { fontSize: rs(14) }]}
               autoCapitalize="none"
               autoCorrect={false}
@@ -318,7 +318,7 @@ export default function FacebookDownloadScreen() {
                 accessibilityRole="button"
                 accessibilityLabel="Xóa đường dẫn"
               >
-                <X color="#9CA3AF" size={rs(16)} />
+                <X color={COLORS.inkSoft} size={rs(16)} />
               </Pressable>
             ) : null}
             <Pressable
@@ -327,9 +327,9 @@ export default function FacebookDownloadScreen() {
               style={({ pressed }) => [
                 styles.pasteBtn,
                 {
-                  paddingHorizontal: rs(10),
-                  height: rs(32),
-                  borderRadius: rs(8),
+                  paddingHorizontal: rs(12),
+                  height: rs(34),
+                  borderRadius: rs(12),
                   gap: rs(4),
                   opacity: pressed ? 0.75 : 1,
                 },
@@ -337,9 +337,9 @@ export default function FacebookDownloadScreen() {
               accessibilityRole="button"
               accessibilityLabel="Dán đường dẫn từ bộ nhớ tạm"
             >
-              <ClipboardPaste color="#60A5FA" size={rs(14)} />
+              <ClipboardPaste color={COLORS.primary} size={rs(14)} />
               <Text style={[styles.pasteBtnText, { fontSize: rs(12) }]}>
-                Dán
+                Dán link
               </Text>
             </Pressable>
           </View>
@@ -669,23 +669,28 @@ export default function FacebookDownloadScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.border,
   },
   backBtn: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '900',
   },
   scrollContent: {
     flexGrow: 1,
@@ -693,12 +698,16 @@ const styles = StyleSheet.create({
   bannerCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   bannerIconWrapper: {
-    backgroundColor: 'rgba(24, 119, 242, 0.14)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -707,36 +716,39 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   bannerTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   bannerDesc: {
-    color: '#8A8F9E',
+    color: COLORS.inkSoft,
+    fontWeight: '500',
     lineHeight: 18,
   },
   inputSection: {
     width: '100%',
   },
   inputLabel: {
-    color: '#8A8F9E',
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    color: COLORS.inkSoft,
+    fontWeight: '800',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: '#2F3346',
-    paddingHorizontal: 12,
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4,
+    borderBottomColor: COLORS.borderStrong,
+    paddingHorizontal: 14,
   },
   textInput: {
     flex: 1,
-    color: '#FFFFFF',
+    color: COLORS.ink,
+    fontWeight: '600',
     paddingVertical: 10,
   },
   clearBtn: {
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -744,66 +756,76 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(24, 119, 242, 0.16)',
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.35)',
+    backgroundColor: COLORS.primarySoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   pasteBtnText: {
-    color: '#93C5FD',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderBottomWidth: 4,
   },
   checkBtn: {
-    backgroundColor: '#1877F2',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   viewBtn: {
-    backgroundColor: '#262A3B',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.14)',
+    backgroundColor: COLORS.secondary,
+    borderColor: COLORS.secondary,
+    borderBottomColor: COLORS.secondaryDark,
   },
   downloadBtn: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   downloadedBtn: {
-    backgroundColor: '#10B981',
+    backgroundColor: COLORS.success,
+    borderColor: COLORS.success,
+    borderBottomColor: COLORS.secondaryDark,
   },
   btnText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   resultCard: {
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   resultHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   resultTitle: {
-    color: '#10B981',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   infoBox: {
-    backgroundColor: '#10121B',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   infoRow: {
     flexDirection: 'column',
     gap: 4,
   },
   infoLabel: {
-    color: '#8A8F9E',
-    fontWeight: '600',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   infoValueTitle: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   qualityBadgeRow: {
     flexDirection: 'row',
@@ -812,17 +834,17 @@ const styles = StyleSheet.create({
   qualityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(59, 130, 246, 0.16)',
+    backgroundColor: COLORS.primarySoft,
     borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.35)',
+    borderColor: COLORS.border,
   },
   qualityBadgeText: {
-    color: '#93C5FD',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
   fileSizeMeta: {
-    color: '#10B981',
-    fontWeight: '700',
+    color: COLORS.success,
+    fontWeight: '800',
   },
   linkPreviewRow: {
     flexDirection: 'row',
@@ -830,7 +852,8 @@ const styles = StyleSheet.create({
   },
   infoValueUrl: {
     flex: 1,
-    color: '#9CA3AF',
+    color: COLORS.inkMuted,
+    fontWeight: '600',
   },
   progressSection: {
     width: '100%',
@@ -841,12 +864,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '700',
   },
   progressTrack: {
     width: '100%',
-    backgroundColor: '#1E202B',
+    backgroundColor: COLORS.surface,
     overflow: 'hidden',
   },
   progressFill: {
@@ -854,30 +877,30 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   progressFillDone: {
-    backgroundColor: '#10B981',
+    backgroundColor: COLORS.success,
   },
   errorBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: COLORS.dangerSoft,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   errorText: {
-    color: '#F87171',
-    fontWeight: '600',
+    color: COLORS.danger,
+    fontWeight: '700',
     flex: 1,
   },
   savedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    backgroundColor: COLORS.successSoft,
+    borderWidth: 1.5,
+    borderColor: '#A9EFE6',
   },
   savedText: {
-    color: '#10B981',
-    fontWeight: '600',
+    color: COLORS.secondaryDark,
+    fontWeight: '700',
     flex: 1,
   },
   buttonGroupRow: {
@@ -885,20 +908,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   guideBox: {
-    backgroundColor: '#13141C',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   guideHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   guideTitle: {
-    color: '#9CA3AF',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   guideText: {
-    color: '#6B7280',
-    lineHeight: 18,
+    color: COLORS.inkSoft,
+    fontWeight: '500',
+    lineHeight: 19,
   },
 });

@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import {
   CalendarDays,
-  CheckCircle2,
   Globe,
   RotateCcw,
+  Sparkles,
 } from 'lucide-react-native';
 import { COLORS } from '../constants/colors';
 import {
@@ -103,7 +103,8 @@ function FilterSection({
             height: animatedHeight,
             opacity: anim,
           },
-        ]}>
+        ]}
+      >
         <Animated.View
           onLayout={handleLayout}
           style={[
@@ -113,12 +114,14 @@ function FilterSection({
               paddingBottom: rs(12),
               transform: [{ translateY }],
             },
-          ]}>
-          {/* 1. Danh sách phim */}
+          ]}
+        >
+          {/* 1. Danh mục phim */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: rs(8) }}>
+            contentContainerStyle={{ gap: rs(8) }}
+          >
             {LIST_TABS.map(tab => {
               const active = filter.listType === tab.value;
               return (
@@ -136,13 +139,15 @@ function FilterSection({
                       gap: rs(6),
                     },
                     active ? styles.pillActive : null,
-                  ]}>
+                  ]}
+                >
                   <Text
                     style={[
                       styles.mainPillText,
                       { fontSize: rs(13) },
                       active ? styles.pillTextActive : null,
-                    ]}>
+                    ]}
+                  >
                     {tab.label}
                   </Text>
                   {tab.hot ? (
@@ -150,19 +155,21 @@ function FilterSection({
                       style={[
                         styles.hotBadge,
                         {
-                          paddingHorizontal: rs(5),
-                          paddingVertical: rs(1),
-                          borderRadius: rs(4),
+                          paddingHorizontal: rs(6),
+                          paddingVertical: rs(1.5),
+                          borderRadius: rs(8),
                         },
                         active ? styles.hotBadgeOnActive : null,
-                      ]}>
+                      ]}
+                    >
                       <Text
                         style={[
                           styles.hotBadgeText,
                           { fontSize: rs(9) },
                           active ? { color: COLORS.primary } : null,
-                        ]}>
-                        HOT
+                        ]}
+                      >
+                        Mới
                       </Text>
                     </View>
                   ) : null}
@@ -173,30 +180,33 @@ function FilterSection({
 
           {/* 2. Thể loại */}
           <View style={{ gap: rs(6) }}>
-            <Text style={[styles.sectionLabel, { fontSize: rs(11) }]}>
-              THỂ LOẠI
+            <Text style={[styles.sectionLabel, { fontSize: rs(12) }]}>
+              Thể loại yêu thích
             </Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: rs(8) }}>
+              contentContainerStyle={{ gap: rs(8) }}
+            >
               <Pressable
                 onPress={() => onChangeFilter({ ...filter, category: '' })}
                 style={[
                   styles.subPill,
                   {
                     paddingHorizontal: rs(14),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(16),
+                    paddingVertical: rs(6.5),
+                    borderRadius: rs(18),
                   },
                   filter.category === '' ? styles.pillActive : null,
-                ]}>
+                ]}
+              >
                 <Text
                   style={[
                     styles.subPillText,
                     { fontSize: rs(12) },
                     filter.category === '' ? styles.pillTextActive : null,
-                  ]}>
+                  ]}
+                >
                   Tất cả
                 </Text>
               </Pressable>
@@ -212,17 +222,19 @@ function FilterSection({
                       styles.subPill,
                       {
                         paddingHorizontal: rs(14),
-                        paddingVertical: rs(6),
-                        borderRadius: rs(16),
+                        paddingVertical: rs(6.5),
+                        borderRadius: rs(18),
                       },
                       active ? styles.pillActive : null,
-                    ]}>
+                    ]}
+                  >
                     <Text
                       style={[
                         styles.subPillText,
                         { fontSize: rs(12) },
                         active ? styles.pillTextActive : null,
-                      ]}>
+                      ]}
+                    >
                       {cat.name}
                     </Text>
                   </Pressable>
@@ -233,26 +245,28 @@ function FilterSection({
 
           {/* 3. Quốc gia & Năm */}
           <View style={{ gap: rs(8) }}>
-            <Text style={[styles.sectionLabel, { fontSize: rs(11) }]}>
-              QUỐC GIA & NĂM
+            <Text style={[styles.sectionLabel, { fontSize: rs(12) }]}>
+              Quốc gia & Năm phát hành
             </Text>
 
             {/* Hàng Quốc gia */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={[styles.rowCenter, { gap: rs(8) }]}>
+              contentContainerStyle={[styles.rowCenter, { gap: rs(8) }]}
+            >
               <View
                 style={[
                   styles.tagHeader,
                   {
                     paddingHorizontal: rs(10),
                     paddingVertical: rs(6),
-                    borderRadius: rs(8),
+                    borderRadius: rs(14),
                     gap: rs(5),
                   },
-                ]}>
-                <Globe color="#F59E0B" size={rs(13)} />
+                ]}
+              >
+                <Globe color={COLORS.secondaryDark} size={rs(13)} />
                 <Text style={[styles.tagHeaderText, { fontSize: rs(12) }]}>
                   Quốc gia
                 </Text>
@@ -269,17 +283,19 @@ function FilterSection({
                       styles.subPill,
                       {
                         paddingHorizontal: rs(14),
-                        paddingVertical: rs(6),
-                        borderRadius: rs(16),
+                        paddingVertical: rs(6.5),
+                        borderRadius: rs(18),
                       },
                       active ? styles.pillActive : null,
-                    ]}>
+                    ]}
+                  >
                     <Text
                       style={[
                         styles.subPillText,
                         { fontSize: rs(12) },
                         active ? styles.pillTextActive : null,
-                      ]}>
+                      ]}
+                    >
                       {c.label}
                     </Text>
                   </Pressable>
@@ -291,18 +307,20 @@ function FilterSection({
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={[styles.rowCenter, { gap: rs(8) }]}>
+              contentContainerStyle={[styles.rowCenter, { gap: rs(8) }]}
+            >
               <View
                 style={[
                   styles.tagHeader,
                   {
                     paddingHorizontal: rs(10),
                     paddingVertical: rs(6),
-                    borderRadius: rs(8),
+                    borderRadius: rs(14),
                     gap: rs(5),
                   },
-                ]}>
-                <CalendarDays color="#F59E0B" size={rs(13)} />
+                ]}
+              >
+                <CalendarDays color={COLORS.primary} size={rs(13)} />
                 <Text style={[styles.tagHeaderText, { fontSize: rs(12) }]}>
                   Năm
                 </Text>
@@ -313,17 +331,19 @@ function FilterSection({
                   styles.subPill,
                   {
                     paddingHorizontal: rs(14),
-                    paddingVertical: rs(6),
-                    borderRadius: rs(16),
+                    paddingVertical: rs(6.5),
+                    borderRadius: rs(18),
                   },
                   filter.year === '' ? styles.pillActive : null,
-                ]}>
+                ]}
+              >
                 <Text
                   style={[
                     styles.subPillText,
                     { fontSize: rs(12) },
                     filter.year === '' ? styles.pillTextActive : null,
-                  ]}>
+                  ]}
+                >
                   Tất cả
                 </Text>
               </Pressable>
@@ -337,17 +357,19 @@ function FilterSection({
                       styles.subPill,
                       {
                         paddingHorizontal: rs(14),
-                        paddingVertical: rs(6),
-                        borderRadius: rs(16),
+                        paddingVertical: rs(6.5),
+                        borderRadius: rs(18),
                       },
                       active ? styles.pillActive : null,
-                    ]}>
+                    ]}
+                  >
                     <Text
                       style={[
                         styles.subPillText,
                         { fontSize: rs(12) },
                         active ? styles.pillTextActive : null,
-                      ]}>
+                      ]}
+                    >
                       {yr}
                     </Text>
                   </Pressable>
@@ -359,20 +381,40 @@ function FilterSection({
       </Animated.View>
 
       {/* Thanh tổng kết số phim & Đặt lại */}
-      <View style={[styles.summaryBar, { paddingVertical: rs(6) }]}>
+      <View
+        style={[
+          styles.summaryBar,
+          {
+            paddingVertical: rs(8),
+            paddingHorizontal: rs(12),
+            borderRadius: rs(16),
+          },
+        ]}
+      >
         <View style={[styles.rowCenter, { gap: rs(6) }]}>
-          <CheckCircle2 color="#D4D4D8" size={rs(15)} />
-          <Text style={[styles.summaryText, { fontSize: rs(13) }]}>
-            Tìm thấy{' '}
-            <Text style={styles.summaryHighlight}>{totalItems}</Text> phim phù
-            hợp
+          <Sparkles color={COLORS.primary} size={rs(14)} />
+          <Text style={[styles.summaryText, { fontSize: rs(12.5) }]}>
+            Có <Text style={styles.summaryHighlight}>{totalItems}</Text> bộ phim
+            đang chờ bạn khám phá
           </Text>
         </View>
         <Pressable
           onPress={onReset}
-          style={[styles.rowCenter, { gap: rs(4) }]}>
-          <RotateCcw color="#9CA3AF" size={rs(13)} />
-          <Text style={[styles.resetText, { fontSize: rs(12) }]}>Đặt lại</Text>
+          style={[
+            styles.rowCenter,
+            styles.resetPill,
+            {
+              gap: rs(4),
+              paddingHorizontal: rs(9),
+              paddingVertical: rs(4),
+              borderRadius: rs(12),
+            },
+          ]}
+        >
+          <RotateCcw color={COLORS.primary} size={rs(12)} />
+          <Text style={[styles.resetText, { fontSize: rs(11.5) }]}>
+            Làm mới
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -393,76 +435,89 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionLabel: {
-    color: '#7C808E',
-    fontWeight: '700',
-    letterSpacing: 0.6,
+    color: COLORS.inkSoft,
+    fontWeight: '800',
   },
   mainPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3.5,
+    borderBottomColor: COLORS.borderStrong,
   },
   mainPillText: {
-    color: '#D1D5DB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '700',
   },
   subPill: {
-    backgroundColor: '#161821',
-    borderWidth: 1,
-    borderColor: '#232634',
+    backgroundColor: COLORS.card,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.borderStrong,
   },
   subPillText: {
-    color: '#D1D5DB',
-    fontWeight: '500',
+    color: COLORS.inkSoft,
+    fontWeight: '700',
   },
   pillActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   pillTextActive: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   hotBadge: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.accent,
   },
   hotBadgeOnActive: {
     backgroundColor: '#FFFFFF',
   },
   hotBadgeText: {
-    color: '#FFFFFF',
+    color: COLORS.ink,
     fontWeight: '800',
   },
   tagHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E202B',
-    borderWidth: 1,
-    borderColor: '#2C2F3F',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   tagHeaderText: {
-    color: '#E5E7EB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   summaryBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
   },
   summaryText: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '600',
   },
   summaryHighlight: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.primary,
+    fontWeight: '900',
   },
   animatedContainer: {
     overflow: 'hidden',
   },
+  resetPill: {
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
   resetText: {
-    color: '#9CA3AF',
-    fontWeight: '600',
+    color: COLORS.primary,
+    fontWeight: '800',
   },
 });

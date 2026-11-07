@@ -58,13 +58,13 @@ export const AppDialogModal = memo(function AppDialogModalComponent() {
     const iconSize = rs(26);
     switch (variant) {
       case 'danger':
-        return <Trash2 color="#EF4444" size={iconSize} />;
+        return <Trash2 color={COLORS.danger} size={iconSize} />;
       case 'warning':
-        return <AlertCircle color="#F59E0B" size={iconSize} />;
+        return <AlertCircle color={COLORS.warning} size={iconSize} />;
       case 'success':
-        return <CheckCircle2 color="#10B981" size={iconSize} />;
+        return <CheckCircle2 color={COLORS.success} size={iconSize} />;
       default:
-        return <Info color="#3B82F6" size={iconSize} />;
+        return <Info color={COLORS.primary} size={iconSize} />;
     }
   };
 
@@ -82,8 +82,8 @@ export const AppDialogModal = memo(function AppDialogModalComponent() {
           style={[
             styles.dialogCard,
             {
-              width: rs(325),
-              borderRadius: rs(20),
+              width: rs(328),
+              borderRadius: rs(26),
               paddingHorizontal: rs(20),
               paddingTop: rs(22),
               paddingBottom: rs(18),
@@ -99,9 +99,9 @@ export const AppDialogModal = memo(function AppDialogModalComponent() {
               variant === 'success' && styles.iconCircleSuccess,
               variant === 'info' && styles.iconCircleInfo,
               {
-                width: rs(54),
-                height: rs(54),
-                borderRadius: rs(27),
+                width: rs(56),
+                height: rs(56),
+                borderRadius: rs(28),
                 marginBottom: rs(14),
               },
             ]}
@@ -154,9 +154,9 @@ export const AppDialogModal = memo(function AppDialogModalComponent() {
                     !isCancel && !isDestructive && styles.btnDefault,
                     {
                       height: rs(44),
-                      borderRadius: rs(12),
+                      borderRadius: rs(16),
                       paddingHorizontal: rs(14),
-                      opacity: pressed ? 0.8 : 1,
+                      transform: [{ translateY: pressed ? 2 : 0 }],
                     },
                   ]}
                 >
@@ -182,51 +182,54 @@ export const AppDialogModal = memo(function AppDialogModalComponent() {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(6, 7, 11, 0.78)',
+    backgroundColor: 'rgba(74, 46, 53, 0.45)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
   },
   dialogCard: {
     maxWidth: '100%',
-    backgroundColor: '#151722',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: COLORS.background,
+    borderWidth: 2.5,
+    borderColor: COLORS.border,
+    borderBottomWidth: 6,
+    borderBottomColor: COLORS.borderStrong,
     alignItems: 'center',
-    elevation: 20,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.65,
-    shadowRadius: 20,
+    elevation: 16,
+    shadowColor: '#E8839B',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
   },
   iconCircle: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2,
   },
   iconCircleDanger: {
-    backgroundColor: 'rgba(239, 68, 68, 0.14)',
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: COLORS.dangerSoft,
+    borderColor: COLORS.border,
   },
   iconCircleWarning: {
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    backgroundColor: COLORS.warningSoft,
+    borderColor: '#FFD670',
   },
   iconCircleSuccess: {
-    backgroundColor: 'rgba(16, 185, 129, 0.14)',
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    backgroundColor: COLORS.successSoft,
+    borderColor: '#A9EFE6',
   },
   iconCircleInfo: {
-    backgroundColor: 'rgba(59, 130, 246, 0.14)',
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    backgroundColor: COLORS.primarySoft,
+    borderColor: COLORS.border,
   },
   title: {
-    color: '#FFFFFF',
-    fontWeight: '800',
+    color: COLORS.ink,
+    fontWeight: '900',
     textAlign: 'center',
   },
   message: {
-    color: '#9CA3AF',
+    color: COLORS.inkSoft,
+    fontWeight: '600',
     textAlign: 'center',
   },
   buttonRow: {
@@ -241,28 +244,33 @@ const styles = StyleSheet.create({
   actionBtn: {
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1.5,
+    borderBottomWidth: 3.5,
   },
   actionBtnFlex: {
     flex: 1,
   },
   btnCancel: {
-    backgroundColor: '#222534',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.border,
+    borderBottomColor: COLORS.borderStrong,
   },
   btnDestructive: {
-    backgroundColor: '#EF4444',
+    backgroundColor: COLORS.danger,
+    borderColor: COLORS.danger,
+    borderBottomColor: COLORS.dangerDark,
   },
   btnDefault: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    borderBottomColor: COLORS.primaryDark,
   },
   btnText: {
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontWeight: '800',
   },
   btnTextCancel: {
-    color: '#D1D5DB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
 });
-

@@ -14,7 +14,7 @@ interface Props {
 
 function MovieCard({ movie, cardWidth, onPress }: Props) {
   const { rs } = useResponsive();
-  const posterHeight = Math.round(cardWidth * 1.42);
+  const posterHeight = Math.round(cardWidth * 1.36);
   const imageUri = getImageSrc(movie.poster_url || movie.thumb_url);
 
   const isEpisodeTag = Boolean(
@@ -45,19 +45,19 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
         styles.card,
         {
           width: cardWidth,
-          borderRadius: rs(12),
-          opacity: pressed ? 0.85 : 1,
+          borderRadius: rs(18),
+          padding: rs(6),
+          transform: [{ translateY: pressed ? 2 : 0 }],
         },
       ]}
     >
-      {/* Poster */}
+      {/* Polaroid Poster Frame */}
       <View
         style={[
           styles.posterWrapper,
           {
             height: posterHeight,
-            borderTopLeftRadius: rs(12),
-            borderTopRightRadius: rs(12),
+            borderRadius: rs(13),
           },
         ]}
       >
@@ -73,11 +73,11 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
           <View style={[styles.poster, styles.posterPlaceholder]} />
         )}
 
-        {/* Top-left stacked badges */}
+        {/* Top-left stacked candy badges */}
         <View
           style={[
             styles.topLeftBadges,
-            { top: rs(8), left: rs(8), gap: rs(4) },
+            { top: rs(7), left: rs(7), gap: rs(4) },
           ]}
         >
           {primaryBadge ? (
@@ -86,14 +86,14 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
                 styles.primaryBadge,
                 isEpisodeTag ? styles.episodeBadge : styles.qualityBadge,
                 {
-                  paddingHorizontal: rs(6),
-                  paddingVertical: rs(2),
-                  borderRadius: rs(4),
+                  paddingHorizontal: rs(8),
+                  paddingVertical: rs(3),
+                  borderRadius: rs(10),
                 },
               ]}
             >
               <Text style={[styles.primaryBadgeText, { fontSize: rs(10) }]}>
-                {primaryBadge.toUpperCase()}
+                {primaryBadge}
               </Text>
             </View>
           ) : null}
@@ -102,9 +102,9 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
               style={[
                 styles.langBadge,
                 {
-                  paddingHorizontal: rs(6),
-                  paddingVertical: rs(2),
-                  borderRadius: rs(4),
+                  paddingHorizontal: rs(8),
+                  paddingVertical: rs(2.5),
+                  borderRadius: rs(10),
                 },
               ]}
             >
@@ -118,36 +118,44 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
           ) : null}
         </View>
 
-        {/* Bottom overlay: Star rating + Red play button */}
+        {/* Bottom overlay: Star rating pill + Strawberry play button */}
         <View
           style={[
             styles.posterBottomRow,
             {
               paddingHorizontal: rs(8),
-              paddingBottom: rs(8),
-              paddingTop: rs(20),
+              paddingBottom: rs(7),
+              paddingTop: rs(12),
             },
           ]}
         >
-          <View style={[styles.ratingRow, { gap: rs(4) }]}>
-            {rating ? (
-              <>
-                <Star color="#FBBF24" fill="#FBBF24" size={rs(12)} />
-                <Text style={[styles.ratingText, { fontSize: rs(12) }]}>
-                  {rating}
-                </Text>
-              </>
-            ) : (
-              <View />
-            )}
-          </View>
+          {rating ? (
+            <View
+              style={[
+                styles.ratingPill,
+                {
+                  paddingHorizontal: rs(7),
+                  paddingVertical: rs(2.5),
+                  borderRadius: rs(10),
+                  gap: rs(3),
+                },
+              ]}
+            >
+              <Star color={COLORS.accent} fill={COLORS.accent} size={rs(11)} />
+              <Text style={[styles.ratingText, { fontSize: rs(11) }]}>
+                {rating}
+              </Text>
+            </View>
+          ) : (
+            <View />
+          )}
           <View
             style={[
               styles.playCircle,
               {
-                width: rs(28),
-                height: rs(28),
-                borderRadius: rs(14),
+                width: rs(30),
+                height: rs(30),
+                borderRadius: rs(15),
               },
             ]}
           >
@@ -159,12 +167,13 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
       {/* Info Footer */}
       <View
         style={{
-          paddingHorizontal: rs(10),
-          paddingVertical: rs(10),
+          paddingHorizontal: rs(6),
+          paddingTop: rs(8),
+          paddingBottom: rs(4),
           gap: rs(2),
         }}
       >
-        <Text numberOfLines={1} style={[styles.title, { fontSize: rs(14) }]}>
+        <Text numberOfLines={1} style={[styles.title, { fontSize: rs(13.5) }]}>
           {movie.name}
         </Text>
         <Text
@@ -173,16 +182,35 @@ function MovieCard({ movie, cardWidth, onPress }: Props) {
         >
           {movie.origin_name}
         </Text>
-        <Text
-          numberOfLines={1}
-          style={[styles.metaRow, { fontSize: rs(11), marginTop: rs(2) }]}
+        <View
+          style={[
+            styles.metaFooterRow,
+            { gap: rs(5), marginTop: rs(3) },
+          ]}
         >
           {movie.year ? (
-            <Text style={styles.yearText}>{movie.year}</Text>
+            <View
+              style={[
+                styles.yearPill,
+                {
+                  paddingHorizontal: rs(6),
+                  paddingVertical: rs(1.5),
+                  borderRadius: rs(6),
+                },
+              ]}
+            >
+              <Text style={[styles.yearText, { fontSize: rs(10) }]}>
+                {movie.year}
+              </Text>
+            </View>
           ) : null}
-          {movie.year && categoryName ? '  •  ' : ''}
-          <Text style={styles.categoryText}>{categoryName}</Text>
-        </Text>
+          <Text
+            numberOfLines={1}
+            style={[styles.categoryText, { fontSize: rs(11) }]}
+          >
+            {categoryName}
+          </Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -192,23 +220,30 @@ export default memo(MovieCard);
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#14151C',
+    backgroundColor: COLORS.card,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#1F222E',
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    borderBottomWidth: 4.5,
+    borderBottomColor: COLORS.borderStrong,
+    shadowColor: '#F4A2B8',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 3,
   },
   posterWrapper: {
     width: '100%',
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: '#1C1E26',
+    backgroundColor: COLORS.surface,
   },
   poster: {
     width: '100%',
     height: '100%',
   },
   posterPlaceholder: {
-    backgroundColor: '#252836',
+    backgroundColor: COLORS.surface,
   },
   topLeftBadges: {
     position: 'absolute',
@@ -216,24 +251,28 @@ const styles = StyleSheet.create({
   },
   primaryBadge: {
     alignSelf: 'flex-start',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
   qualityBadge: {
     backgroundColor: COLORS.primary,
   },
   episodeBadge: {
-    backgroundColor: '#A16207',
+    backgroundColor: '#FF7597',
   },
   primaryBadgeText: {
     color: '#FFFFFF',
     fontWeight: '800',
   },
   langBadge: {
-    backgroundColor: 'rgba(18, 18, 24, 0.82)',
+    backgroundColor: 'rgba(255, 248, 246, 0.92)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
     alignSelf: 'flex-start',
   },
   langBadgeText: {
-    color: '#E5E7EB',
-    fontWeight: '600',
+    color: COLORS.ink,
+    fontWeight: '700',
   },
   posterBottomRow: {
     position: 'absolute',
@@ -243,37 +282,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
   },
-  ratingRow: {
+  ratingPill: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 248, 246, 0.92)',
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   ratingText: {
-    color: '#FBBF24',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   playCircle: {
     backgroundColor: COLORS.primary,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: COLORS.ink,
+    fontWeight: '800',
   },
   originTitle: {
-    color: '#8A8F9E',
+    color: COLORS.inkMuted,
+    fontWeight: '600',
   },
-  metaRow: {
-    color: '#8A8F9E',
+  metaFooterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  yearPill: {
+    backgroundColor: COLORS.accentSoft,
   },
   yearText: {
-    color: '#F59E0B',
-    fontWeight: '700',
+    color: '#C87D00',
+    fontWeight: '800',
   },
   categoryText: {
-    color: '#D1D5DB',
-    fontWeight: '500',
+    flex: 1,
+    color: COLORS.inkSoft,
+    fontWeight: '600',
   },
 });

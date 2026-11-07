@@ -48,11 +48,13 @@ export interface EpisodeItem {
   filename?: string;
   link_embed?: string;
   link_m3u8?: string;
+  episodeIndex?: number;
 }
 
 export interface EpisodeServer {
   server_name: string;
   server_data: EpisodeItem[];
+  serverIndex?: number;
 }
 
 export interface MovieDetail extends MovieItem {

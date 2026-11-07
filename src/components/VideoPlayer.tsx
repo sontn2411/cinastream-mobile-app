@@ -70,9 +70,11 @@ function VideoPlayer({
   const videoRef = useRef<VideoRef>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasInitialSeeked = useRef(false);
+  const isLoadedRef = useRef(false);
   const lastSavedTime = useRef(0);
   const currentTimeRef = useRef(0);
   const durationRef = useRef(0);
+  const onProgressUpdateRef = useRef(onProgressUpdate);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -83,34 +85,48 @@ function VideoPlayer({
   const [seekBarWidth, setSeekBarWidth] = useState(1);
   const [error, setError] = useState(false);
 
-  // Sync refs for cleanup/unmount
+  // New episode → flush previous episode progress, then reset state for the new episode
   useEffect(() => {
-    currentTimeRef.current = currentTime;
-  }, [currentTime]);
+    if (
+      isLoadedRef.current &&
+      currentTimeRef.current > 0 &&
+      onProgressUpdateRef.current
+    ) {
+      onProgressUpdateRef.current(currentTimeRef.current, durationRef.current);
+    }
+    const startAt = initialTime && initialTime > 0 ? initialTime : 0;
+    isLoadedRef.current = false;
+    currentTimeRef.current = startAt;
+    durationRef.current = 0;
+    hasInitialSeeked.current = false;
+    lastSavedTime.current = startAt;
+    setCurrentTime(startAt);
+    setDuration(0);
+    setError(false);
+    setBuffering(false);
+    setShowControls(true);
+  }, [uri, initialTime]);
 
+  // Keep callback ref updated after episode transition effect
   useEffect(() => {
-    durationRef.current = duration;
-  }, [duration]);
+    onProgressUpdateRef.current = onProgressUpdate;
+  }, [onProgressUpdate]);
 
   // Flush progress on unmount if user was watching
   useEffect(() => {
     return () => {
-      if (currentTimeRef.current > 0 && onProgressUpdate) {
-        onProgressUpdate(currentTimeRef.current, durationRef.current);
+      if (
+        isLoadedRef.current &&
+        currentTimeRef.current > 0 &&
+        onProgressUpdateRef.current
+      ) {
+        onProgressUpdateRef.current(
+          currentTimeRef.current,
+          durationRef.current,
+        );
       }
     };
-  }, [onProgressUpdate]);
-
-  // New episode → reset progress & error
-  useEffect(() => {
-    const startAt = initialTime && initialTime > 0 ? initialTime : 0;
-    setCurrentTime(startAt);
-    setDuration(0);
-    setError(false);
-    setShowControls(true);
-    hasInitialSeeked.current = false;
-    lastSavedTime.current = startAt;
-  }, [uri, initialTime]);
+  }, []);
 
   useEffect(() => {
     if (hideTimer.current) {
@@ -130,12 +146,13 @@ function VideoPlayer({
     (target: number) => {
       const next = Math.max(0, Math.min(duration, target));
       videoRef.current?.seek(next);
+      currentTimeRef.current = next;
       setCurrentTime(next);
       lastSavedTime.current = next;
-      onProgressUpdate?.(next, duration);
+      onProgressUpdateRef.current?.(next, durationRef.current);
       setShowControls(true);
     },
-    [duration, onProgressUpdate],
+    [duration],
   );
 
   const handleSeekBarLayout = useCallback((e: LayoutChangeEvent) => {
@@ -186,6 +203,7 @@ function VideoPlayer({
     <View style={[styles.container, { height }]}>
       {started && videoSource && !error ? (
         <Video
+          key={uri}
           ref={videoRef}
           source={videoSource}
           style={StyleSheet.absoluteFill}
@@ -196,19 +214,29 @@ function VideoPlayer({
           mixWithOthers="duck"
           progressUpdateInterval={500}
           onLoad={meta => {
+            isLoadedRef.current = true;
+            durationRef.current = meta.duration;
             setDuration(meta.duration);
             setBuffering(false);
             if (initialTime && initialTime > 0 && !hasInitialSeeked.current) {
               hasInitialSeeked.current = true;
               videoRef.current?.seek(initialTime);
+              currentTimeRef.current = initialTime;
               setCurrentTime(initialTime);
             }
           }}
           onProgress={prog => {
+            if (!isLoadedRef.current) {
+              return;
+            }
+            currentTimeRef.current = prog.currentTime;
             setCurrentTime(prog.currentTime);
             if (Math.abs(prog.currentTime - lastSavedTime.current) >= 3) {
               lastSavedTime.current = prog.currentTime;
-              onProgressUpdate?.(prog.currentTime, duration);
+              onProgressUpdateRef.current?.(
+                prog.currentTime,
+                durationRef.current,
+              );
             }
           }}
           onBuffer={({ isBuffering }) => setBuffering(isBuffering)}

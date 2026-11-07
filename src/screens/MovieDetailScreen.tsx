@@ -11,6 +11,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useShallow } from 'zustand/react/shallow';
 import {
   Check,
   Clock,
@@ -36,11 +37,25 @@ import {
 import { showAppAlert } from '../store/useDialogStore';
 import { useFavoriteStore } from '../store/useFavoriteStore';
 import { useHistoryStore } from '../store/useHistoryStore';
-import { EpisodeItem } from '../types/movie';
+import { EpisodeItem, EpisodeServer } from '../types/movie';
 import { getImageSrc } from '../utils/image';
 import { useResponsive } from '../utils/responsive';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MovieDetail'>;
+
+function formatEpisodeLabel(name?: string, episodeIndex?: number): string {
+  const trimmed = name?.trim() ?? '';
+  if (!trimmed) {
+    return episodeIndex !== undefined ? `Tập ${episodeIndex + 1}` : '';
+  }
+  if (/^tập\s/i.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^\d+$/.test(trimmed)) {
+    return `Tập ${parseInt(trimmed, 10)}`;
+  }
+  return trimmed;
+}
 
 function cleanHtml(raw?: string): string {
   if (!raw) {
@@ -82,6 +97,35 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
   const [selectedEpisodeIdx, setSelectedEpisodeIdx] = useState(
     resumeEpisodeIndex ?? historyItem?.episodeIndex ?? 0,
   );
+
+  // Only apply route's resumeTime when on the exact episode/server it was meant for;
+  // otherwise look up saved watch progress specifically for the selected episode.
+  const episodeInitialTime = useMemo(() => {
+    const targetResumeServer =
+      resumeServerIndex ?? historyItem?.serverIndex ?? 0;
+    const targetResumeEpisode =
+      resumeEpisodeIndex ?? historyItem?.episodeIndex ?? 0;
+    if (
+      resumeTime !== undefined &&
+      selectedServerIdx === targetResumeServer &&
+      selectedEpisodeIdx === targetResumeEpisode
+    ) {
+      return resumeTime;
+    }
+    return useHistoryStore
+      .getState()
+      .getEpisodeProgress(slug, selectedServerIdx, selectedEpisodeIdx)
+      ?.currentTime;
+  }, [
+    slug,
+    selectedServerIdx,
+    selectedEpisodeIdx,
+    resumeTime,
+    resumeServerIndex,
+    resumeEpisodeIndex,
+    historyItem?.serverIndex,
+    historyItem?.episodeIndex,
+  ]);
   const [isPlaying, setIsPlaying] = useState(
     Boolean(
       resumeTime !== undefined ||
@@ -104,9 +148,11 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
 
   // Select only downloads relevant to this movie to prevent re-renders when other movies are downloading
   const downloads = useDownloadStore(
-    useCallback(
-      state => state.downloads.filter(d => d.movie.slug === slug),
-      [slug],
+    useShallow(
+      useCallback(
+        state => state.downloads.filter(d => d.movie.slug === slug),
+        [slug],
+      ),
     ),
   );
   const startDownload = useDownloadStore(state => state.startDownload);
@@ -129,23 +175,96 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
   });
 
   const movie = data?.movie ?? initialMovie;
-  const servers = useMemo(() => data?.episodes ?? [], [data?.episodes]);
-  const currentServerName =
-    servers[selectedServerIdx]?.server_name || 'Vietsub';
-  const episodes: EpisodeItem[] = useMemo(
-    () => servers[selectedServerIdx]?.server_data ?? [],
+  const servers: EpisodeServer[] = useMemo(() => {
+    if (data?.episodes && data.episodes.length > 0) {
+      return data.episodes;
+    }
+    if (downloads.length === 0) {
+      return [];
+    }
+    const serverMap = new Map<number, EpisodeServer>();
+    const sortedDownloads = [...downloads].sort((a, b) =>
+      a.serverIndex !== b.serverIndex
+        ? a.serverIndex - b.serverIndex
+        : a.episodeIndex - b.episodeIndex,
+    );
+    for (const d of sortedDownloads) {
+      let srv = serverMap.get(d.serverIndex);
+      if (!srv) {
+        srv = {
+          server_name: d.serverName || 'Đã tải về',
+          serverIndex: d.serverIndex,
+          server_data: [],
+        };
+        serverMap.set(d.serverIndex, srv);
+      }
+      srv.server_data.push({
+        name: d.episodeName || `Tập ${d.episodeIndex + 1}`,
+        slug: d.episodeSlug,
+        filename: d.episodeName,
+        link_m3u8:
+          d.status === 'completed' && d.localManifestPath
+            ? d.localManifestPath
+            : d.remoteUri,
+        episodeIndex: d.episodeIndex,
+      });
+    }
+    return Array.from(serverMap.values());
+  }, [data?.episodes, downloads]);
+
+  const activeServer = useMemo(
+    () =>
+      servers.find(
+        (srv, idx) => (srv.serverIndex ?? idx) === selectedServerIdx,
+      ) ?? servers[0],
     [servers, selectedServerIdx],
   );
-  const currentEpisode: EpisodeItem | undefined = episodes[selectedEpisodeIdx];
+  const currentServerName = activeServer?.server_name || 'Vietsub';
+  const episodes: EpisodeItem[] = useMemo(
+    () => activeServer?.server_data ?? [],
+    [activeServer],
+  );
+  const currentEpisode: EpisodeItem | undefined = useMemo(
+    () =>
+      episodes.find(
+        (ep, idx) => (ep.episodeIndex ?? idx) === selectedEpisodeIdx,
+      ) ?? episodes[0],
+    [episodes, selectedEpisodeIdx],
+  );
 
   // Lookup download item for currently selected episode
   const currentEpisodeDownload = useMemo(() => {
-    if (!currentEpisode) {
-      return undefined;
+    if (currentEpisode) {
+      const id = buildDownloadId(slug, selectedServerIdx, currentEpisode.slug);
+      const byId = downloads.find(d => d.id === id);
+      if (byId) {
+        return byId;
+      }
     }
-    const id = buildDownloadId(slug, selectedServerIdx, currentEpisode.slug);
-    return downloads.find(d => d.id === id);
-  }, [downloads, slug, selectedServerIdx, currentEpisode]);
+    return downloads.find(
+      d =>
+        d.serverIndex === selectedServerIdx &&
+        d.episodeIndex === selectedEpisodeIdx,
+    );
+  }, [downloads, slug, selectedServerIdx, selectedEpisodeIdx, currentEpisode]);
+
+  const currentEpisodeLabel = useMemo(
+    () =>
+      formatEpisodeLabel(
+        currentEpisode?.name ??
+          currentEpisodeDownload?.episodeName ??
+          historyItem?.episodeName,
+        currentEpisode?.episodeIndex ??
+          currentEpisodeDownload?.episodeIndex ??
+          selectedEpisodeIdx,
+      ),
+    [
+      currentEpisode,
+      currentEpisodeDownload,
+      historyItem?.episodeName,
+      selectedEpisodeIdx,
+    ],
+  );
 
   // Map of episodeSlug -> download item for the current server
   const serverDownloadMap = useMemo(() => {
@@ -199,10 +318,17 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
     setIsPlaying(true);
   }, []);
 
-  const handleSelectServer = useCallback((idx: number) => {
-    setSelectedServerIdx(idx);
-    setSelectedEpisodeIdx(0);
-  }, []);
+  const handleSelectServer = useCallback(
+    (idx: number) => {
+      setSelectedServerIdx(idx);
+      const targetServer = servers.find(
+        (srv, sIdx) => (srv.serverIndex ?? sIdx) === idx,
+      );
+      const firstEp = targetServer?.server_data[0];
+      setSelectedEpisodeIdx(firstEp?.episodeIndex ?? 0);
+    },
+    [servers],
+  );
 
   const handleProgressUpdate = useCallback(
     (currTime: number, dur: number) => {
@@ -223,12 +349,16 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
   );
 
   const handleEnd = useCallback(() => {
-    if (selectedEpisodeIdx + 1 < episodes.length) {
-      setSelectedEpisodeIdx(selectedEpisodeIdx + 1);
+    const currentArrayIdx = episodes.findIndex(
+      (ep, idx) => (ep.episodeIndex ?? idx) === selectedEpisodeIdx,
+    );
+    if (currentArrayIdx >= 0 && currentArrayIdx + 1 < episodes.length) {
+      const nextEp = episodes[currentArrayIdx + 1];
+      setSelectedEpisodeIdx(nextEp.episodeIndex ?? currentArrayIdx + 1);
     } else {
       setIsPlaying(false);
     }
-  }, [selectedEpisodeIdx, episodes.length]);
+  }, [selectedEpisodeIdx, episodes]);
 
   const handleBack = useCallback(() => navigation.goBack(), [navigation]);
 
@@ -452,11 +582,11 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
       <VideoPlayer
         uri={playbackUri}
         backdropUri={backdropUri}
-        title={`${movie?.name ?? ''}${currentEpisode ? ` • ${currentEpisode.name}` : ''}`}
+        title={`${movie?.name ?? ''}${currentEpisodeLabel ? ` • ${currentEpisodeLabel}` : ''}`}
         height={playerHeight}
         started={hasStarted}
         playing={isPlaying}
-        initialTime={resumeTime ?? historyItem?.currentTime}
+        initialTime={episodeInitialTime}
         onProgressUpdate={handleProgressUpdate}
         onStart={handleStartPlay}
         onTogglePlay={handleTogglePlay}
@@ -605,11 +735,11 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
             <Text style={[styles.watchNowText, { fontSize: rs(13) }]}>
               {hasStarted
                 ? isPlaying
-                  ? 'Đang phát'
-                  : 'Tiếp tục'
+                  ? `Đang phát${currentEpisodeLabel ? ` • ${currentEpisodeLabel}` : ''}`
+                  : `Tiếp tục${currentEpisodeLabel ? ` • ${currentEpisodeLabel}` : ''}`
                 : historyItem && historyItem.currentTime > 0
-                ? `Xem tiếp (${historyItem.episodeName || 'Đang dở'})`
-                : 'Xem phim'}
+                ? `Xem tiếp (${formatEpisodeLabel(historyItem.episodeName, historyItem.episodeIndex) || 'Đang dở'})`
+                : `Xem phim${currentEpisodeLabel ? ` • ${currentEpisodeLabel}` : ''}`}
             </Text>
           </Pressable>
 
@@ -684,7 +814,7 @@ export default function MovieDetailScreen({ navigation, route }: Props) {
           </Pressable>
         </View>
 
-        {isLoading ? (
+        {isLoading && servers.length === 0 ? (
           <View style={[styles.loadingCenter, { paddingVertical: rs(24) }]}>
             <ActivityIndicator size="large" color={COLORS.primary} />
           </View>

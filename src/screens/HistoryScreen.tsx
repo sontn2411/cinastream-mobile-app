@@ -89,6 +89,7 @@ export default function HistoryScreen() {
         slug: item.movie.slug,
         movie: item.movie,
         resumeEpisodeIndex: item.episodeIndex,
+        resumeServerIndex: item.serverIndex,
         resumeTime: item.currentTime,
       });
     },

@@ -57,11 +57,12 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
           contentContainerStyle={[styles.serverList, { gap: rs(8) }]}
         >
           {servers.map((srv, idx) => {
-            const active = idx === selectedServerIdx;
+            const srvIndex = srv.serverIndex ?? idx;
+            const active = srvIndex === selectedServerIdx;
             return (
               <Pressable
-                key={`${srv.server_name}-${idx}`}
-                onPress={() => onSelectServer(idx)}
+                key={`${srv.server_name}-${srvIndex}`}
+                onPress={() => onSelectServer(srvIndex)}
                 style={[
                   styles.serverPill,
                   {
@@ -99,12 +100,13 @@ export const EpisodeSelector = memo(function EpisodeSelectorComponent({
 
           <View style={[styles.episodeGrid, { gap: epGap }]}>
             {episodes.map((ep, idx) => {
-              const active = idx === selectedEpisodeIdx;
+              const epIndex = ep.episodeIndex ?? idx;
+              const active = epIndex === selectedEpisodeIdx;
               const dlItem = serverDownloadMap.get(ep.slug);
               return (
                 <Pressable
-                  key={`${ep.slug}-${idx}`}
-                  onPress={() => onSelectEpisode(idx)}
+                  key={`${ep.slug}-${epIndex}`}
+                  onPress={() => onSelectEpisode(epIndex)}
                   style={[
                     styles.episodeBox,
                     {
